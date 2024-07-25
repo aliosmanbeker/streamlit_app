@@ -23,7 +23,7 @@ def show_page():
     st.write('Veri Tablosu:')
     paged_df = get_table_page(df, page_size, page_num)
     paged_df = paged_df.reset_index(drop=True)  # Indeks numaralarını gizle
-    st.dataframe(paged_df, height=800, width=1400)  # Genişliği %20 artırmak için
+    st.dataframe(paged_df.style.hide(axis='index'), height=800, width=1400)  # Genişliği %20 artırmak için
 
     # Borsada İşlem Görüp Görmediğine Göre Filtreleme
     st.header('Filtreler')
@@ -39,7 +39,7 @@ def show_page():
     st.write('Filtrelenmiş Veri Tablosu:')
     filtered_paged_df = get_table_page(filtered_df, page_size, page_num)
     filtered_paged_df = filtered_paged_df.reset_index(drop=True)  # Indeks numaralarını gizle
-    st.dataframe(filtered_paged_df, height=800, width=1400)  # Genişliği %20 artırmak için
+    st.dataframe(filtered_paged_df.style.hide(axis='index'), height=800, width=1400)  # Genişliği %20 artırmak için
 
     # Borsada işlem görüp görmeme durumu grafiği
     st.subheader('Borsada İşlem Görme Durumu:')
