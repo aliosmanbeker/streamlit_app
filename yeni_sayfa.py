@@ -4,9 +4,9 @@ import pandas as pd
 def show_page():
     st.title("Yeni Sayfa")
 
-    st.sidebar.title("Veri Dosyalarını Seçin")
+    # Veri Dosyalarını Seçin
+    st.header("Veri Dosyalarını Seçin")
 
-    # Toggle butonları
     dosya_secenekleri = [
         "Aşırı Hareket Senaryosu ve Kapsama Oranı (Extreme Move Multiplier and Extreme Move Covered Fraction).xlsx",
         "Fiyat Değişim Aralığı (Price Scan Range-PSR).xlsx",
@@ -15,7 +15,7 @@ def show_page():
         "Vadeler Arası Yayılma Pozisyonu Riski (Intra-Commodity Spread Charge).xlsx"
     ]
 
-    selected_file = st.sidebar.radio("Dosya Seçin:", dosya_secenekleri)
+    selected_file = st.radio("Dosya Seçin:", dosya_secenekleri)
 
     if selected_file:
         st.write(f"Seçilen Dosya: {selected_file}")
