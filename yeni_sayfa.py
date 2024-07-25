@@ -23,6 +23,6 @@ def show_page():
         file_path = f"datas/{selected_file}"
         try:
             df = pd.read_excel(file_path)
-            st.dataframe(df)
+            st.dataframe(df, height=800, width=1200)
         except Exception as e:
             st.error(f"Dosya yüklenirken bir hata oluştu: {e}")

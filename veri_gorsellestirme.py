@@ -22,7 +22,7 @@ def show_page():
     # Veri Tabloları ve Filtreleme
     st.write('Veri Tablosu:')
     paged_df = get_table_page(df, page_size, page_num)
-    st.write(paged_df)
+    st.dataframe(paged_df, height=800, width=1200)
 
     # Borsada İşlem Görüp Görmediğine Göre Filtreleme
     st.header('Filtreler')
@@ -37,7 +37,7 @@ def show_page():
 
     st.write('Filtrelenmiş Veri Tablosu:')
     filtered_paged_df = get_table_page(filtered_df, page_size, page_num)
-    st.write(filtered_paged_df)
+    st.dataframe(filtered_paged_df, height=800, width=1200)
 
     # Borsada işlem görüp görmeme durumu grafiği
     st.subheader('Borsada İşlem Görme Durumu:')

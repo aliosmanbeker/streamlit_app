@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datas/Aşırı Hareket Senaryosu ve Kapsama Oranı (Extreme Move Multiplier and Extreme Move Covered Fraction).xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/datas/Aşırı Hareket Senaryosu ve Kapsama Oranı (Extreme Move Multiplier and Extreme Move Covered Fraction).xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datas/Fiyat Değişim Aralığı (Price Scan Range-PSR).xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/datas/Fiyat Değişim Aralığı (Price Scan Range-PSR).xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datas/Kısa Opsiyon Pozisyonu Minimum Riski (Short Option Minimum Risk).xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/datas/Kısa Opsiyon Pozisyonu Minimum Riski (Short Option Minimum Risk).xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yeni_sayfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeni_sayfa.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
