@@ -22,7 +22,7 @@ def show_page():
     # Veri Tabloları ve Filtreleme
     st.write('Veri Tablosu:')
     paged_df = get_table_page(df, page_size, page_num)
-    st.dataframe(paged_df, height=800, width=st.beta_container().width * 1.2)
+    st.dataframe(paged_df, height=800, width=1400)  # Genişliği %20 artırmak için
 
     # Borsada İşlem Görüp Görmediğine Göre Filtreleme
     st.header('Filtreler')
@@ -37,7 +37,7 @@ def show_page():
 
     st.write('Filtrelenmiş Veri Tablosu:')
     filtered_paged_df = get_table_page(filtered_df, page_size, page_num)
-    st.dataframe(filtered_paged_df, height=800, width=st.beta_container().width * 1.2)
+    st.dataframe(filtered_paged_df, height=800, width=1400)  # Genişliği %20 artırmak için
 
     # Borsada işlem görüp görmeme durumu grafiği
     st.subheader('Borsada İşlem Görme Durumu:')
@@ -66,10 +66,4 @@ def show_page():
     numeric_df = df.select_dtypes(include='number')
     if not numeric_df.empty:
         corr_matrix = numeric_df.corr()
-        st.write(corr_matrix)
-        fig, ax = plt.subplots()
-        cax = ax.matshow(corr_matrix, cmap='coolwarm')
-        fig.colorbar(cax)
-        st.pyplot(fig)
-    else:
-        st.write("Korelasyon matrisi oluşturmak için yeterli sayısal veri yok.")
+        st.write(corr
