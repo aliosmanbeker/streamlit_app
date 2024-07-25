@@ -2,7 +2,7 @@ import streamlit as st
 
 # Sayfa navigasyonu
 st.sidebar.title("Navigasyon")
-selected_page = st.sidebar.radio("Sayfa seçin:", ["Ana Sayfa", "Veri Görselleştirme", "Kapanışta Al Açılışta Sat Stratejisi", "Yükseliş Takip Stratejisi"])
+selected_page = st.sidebar.radio("Sayfa seçin:", ["Ana Sayfa", "Veri Görselleştirme", "Kapanışta Al Açılışta Sat Stratejisi", "Yükseliş Takip Stratejisi", "Yeni Sayfa"])
 
 if selected_page == "Ana Sayfa":
     st.title("Hoşgeldiniz")
@@ -19,3 +19,6 @@ elif selected_page == "Kapanışta Al Açılışta Sat Stratejisi":
 elif selected_page == "Yükseliş Takip Stratejisi":
     import backtest2_analizi
     backtest2_analizi.show_page()
+elif selected_page == "Yeni Sayfa":
+    import yeni_sayfa
+    yeni_sayfa.show_page()
