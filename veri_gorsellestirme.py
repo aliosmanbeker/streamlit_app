@@ -66,4 +66,10 @@ def show_page():
     numeric_df = df.select_dtypes(include='number')
     if not numeric_df.empty:
         corr_matrix = numeric_df.corr()
-        st.write(corr
+        st.write(corr_matrix)
+        fig, ax = plt.subplots()
+        cax = ax.matshow(corr_matrix, cmap='coolwarm')
+        fig.colorbar(cax)
+        st.pyplot(fig)
+    else:
+        st.write("Korelasyon matrisi oluşturmak için yeterli sayısal veri yok.")
