@@ -23,6 +23,6 @@ def show_page():
         file_path = f"datas/{selected_file}"
         try:
             df = pd.read_excel(file_path)
-            st.dataframe(df, height=800, width=1400)  # Genişliği %20 artırmak için
+            st.dataframe(df, height=800, width=2000)  # Genişliği %20 artırmak için
         except Exception as e:
             st.error(f"Dosya yüklenirken bir hata oluştu: {e}")
