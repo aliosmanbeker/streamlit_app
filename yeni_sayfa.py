@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 def show_page():
     st.title("Yeni Sayfa")
@@ -24,6 +25,12 @@ def show_page():
         try:
             df = pd.read_excel(file_path)
             df = df.reset_index(drop=True)  # Indeks numaralarını gizle
-            st.dataframe(df.style.hide(axis='index'), height=800, width=1400)  # Genişliği %20 artırmak için
+
+            gb = GridOptionsBuilder.from_dataframe(df)
+            gb.configure_pagination()
+            gb.configure_default_column(editable=True, groupable=True, filter=True)
+            grid_options = gb.build()
+
+            AgGrid(df, gridOptions=grid_options, height=800, width='100%')
         except Exception as e:
             st.error(f"Dosya yüklenirken bir hata oluştu: {e}")
