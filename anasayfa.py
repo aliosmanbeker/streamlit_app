@@ -1,5 +1,8 @@
 import streamlit as st
 
+# Sayfa yapılandırmasını ayarla
+st.set_page_config(page_title="Warrant List", page_icon="", layout="wide")
+
 # Sayfa navigasyonu
 st.sidebar.title("Navigasyon")
 selected_page = st.sidebar.radio("Sayfa seçin:", ["Ana Sayfa", "Veri Görselleştirme", "Kapanışta Al Açılışta Sat Stratejisi", "Yükseliş Takip Stratejisi", "Yeni Sayfa", "Warrants"])
