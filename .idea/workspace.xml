@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/bedelli_sermaye_artirimi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bedelsiz_sermaye_artirimi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~lock.2024-07-27T09-49_export_final.csv#" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024-07-27T09-49_export_final.csv" beforeDir="false" afterPath="$PROJECT_DIR$/2024-07-27T09-49_export_final.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anasayfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/anasayfa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,13 +44,13 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/beker/PycharmProjects/devStreamlit&quot;
+    &quot;last_opened_file_path&quot;: &quot;/home/beker/PycharmProjects/Scraping&quot;
   }
 }</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
+        <option value="bundled-python-sdk-ce3d9afa04ac-ba05f1cad1b1-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.20224.347" />
       </set>
     </attachedChunks>
   </component>
