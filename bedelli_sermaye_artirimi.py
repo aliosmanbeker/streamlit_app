@@ -1,86 +1,131 @@
 import streamlit as st
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+from playwright.async_api import async_playwright
 import pandas as pd
+import asyncio
 import os
-from datetime import datetime, timedelta
+import datetime
 
-CSV_FILENAME = "sermaye_artirimi_verileri.csv"
-LAST_FETCHED_FILENAME = "last_fetched.txt"
+# CSV dosyası için yol
+CSV_FILE_PATH = 'sermaye_artirimi_data.csv'
 
+async def fetch_data():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
 
-def save_last_fetched_time():
-    with open(LAST_FETCHED_FILENAME, "w") as f:
-        f.write(datetime.now().isoformat())
+        # Web sayfasını ziyaret et
+        url = "https://halkarz.com/sermaye-artirimi/"
+        await page.goto(url)
 
+        # Sayfanın tamamen yüklendiğinden emin olun
+        await page.wait_for_load_state('networkidle')
 
-def load_last_fetched_time():
-    if os.path.exists(LAST_FETCHED_FILENAME):
-        with open(LAST_FETCHED_FILENAME, "r") as f:
-            return datetime.fromisoformat(f.read().strip())
+        # Seçicinin var olup olmadığını kontrol et
+        table = await page.query_selector('.sal-bedelli .rwd-table')
+        title_info = await page.query_selector('.sal-bedelli .salb-title')
+
+        if table and title_info:
+            # Em ve Span etiketi içerisindeki verileri çekiyoruz
+            em_text = await title_info.eval_on_selector('em', 'el => el.textContent') or '...'
+            span_text = await title_info.eval_on_selector('span', 'el => el.textContent') or '...'
+            time_text = await title_info.eval_on_selector('time', 'el => el.textContent') or '...'
+
+            # Başlıkları (headers) otomatik olarak ilk <th> etiketlerinden çekiyoruz
+            headers = await table.eval_on_selector_all('tr th', 'els => els.map(el => el.textContent.trim())')
+
+            # Verileri çekiyoruz
+            rows = []
+            for row in await table.query_selector_all('tr'):
+                cols = await row.query_selector_all('td')
+
+                if not cols:
+                    continue
+
+                # İlk sütun: Bist Kodu ve Şirket Adı birleştiriliyor
+                bist_kodu = await cols[0].eval_on_selector('a', 'el => el.textContent') or '...'
+                sirket_adi = await cols[0].eval_on_selector('small', 'el => el.textContent') or '...'
+                ilk_sutun = f"{bist_kodu} - {sirket_adi}"
+
+                # Diğer sütunlar sırayla
+                yuzde = await cols[1].text_content() or '...'
+                tutar = await cols[2].text_content() or '...'
+                ruchan = await cols[3].text_content() or '...'
+                ykk = await cols[4].text_content() or '...'
+                spk_onay = await cols[5].text_content() or '...'
+
+                # Son sütun: Başlangıç ve bitiş tarihleri
+                if len(cols) > 6:
+                    tarih_araligi = await cols[6].text_content() or '...'
+                else:
+                    tarih_araligi = '...'
+
+                # Verileri sıralı bir şekilde ekliyoruz
+                rows.append([ilk_sutun, yuzde, tutar, ruchan, ykk, spk_onay, tarih_araligi])
+
+            # Verileri DataFrame'e dönüştürme
+            df = pd.DataFrame(rows, columns=headers)
+
+            await browser.close()
+            return df, em_text, span_text, time_text
+        else:
+            await browser.close()
+            return None, None, None, None
+
+def save_data_to_csv(df, em_text, span_text, time_text):
+    # Verileri CSV dosyasına kaydet
+    df['Son Güncelleme Em'] = em_text
+    df['Son Güncelleme Span'] = span_text
+    df['Son Güncelleme Tarihi'] = time_text
+    df['Çekilme Tarihi'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    df.to_csv(CSV_FILE_PATH, index=False)
+
+def load_data_from_csv():
+    # CSV dosyasından verileri yükle
+    if os.path.exists(CSV_FILE_PATH):
+        df = pd.read_csv(CSV_FILE_PATH)
+        return df
     return None
 
-
-def should_fetch_data():
-    last_fetched = load_last_fetched_time()
-    if last_fetched is None:
-        return True
-    return datetime.now() - last_fetched > timedelta(hours=24)
-
-
-def fetch_data():
-    # Tarayıcı ayarları
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-
-    service = Service('path/to/chromedriver')  # Burada chromedriver yolunu belirtin
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-
-    url = "https://halkarz.com/sermaye-artirimi/"
-    driver.get(url)
-
-    # Tabloyu bul
-    try:
-        table = driver.find_element(By.CSS_SELECTOR, '.sal-bedelli .rwd-table')
-        headers = [header.text.strip() for header in table.find_elements(By.CSS_SELECTOR, 'th')]
-
-        rows = []
-        for row in table.find_elements(By.CSS_SELECTOR, 'tr')[1:]:
-            cells = [cell.text.strip() for cell in row.find_elements(By.CSS_SELECTOR, 'td')]
-            if cells:
-                rows.append(cells)
-
-        df = pd.DataFrame(rows, columns=headers)
-        driver.quit()
-        return df
-    except Exception as e:
-        driver.quit()
-        raise e
-
+def is_data_outdated():
+    # Verilerin eski olup olmadığını kontrol et
+    if os.path.exists(CSV_FILE_PATH):
+        df = pd.read_csv(CSV_FILE_PATH)
+        last_fetch_time = df['Çekilme Tarihi'].iloc[0]
+        last_fetch_time = datetime.datetime.strptime(last_fetch_time, '%Y-%m-%d %H:%M:%S')
+        current_time = datetime.datetime.now()
+        time_diff = current_time - last_fetch_time
+        return time_diff.total_seconds() > 86400  # 24 saat
+    return True
 
 def show_page():
     st.title("Bedelli Sermaye Artırımı Yapacak Şirketler")
 
-    if should_fetch_data():
-        try:
-            df = fetch_data()
-            df.to_csv(CSV_FILENAME, index=False)
-            save_last_fetched_time()
-            st.success(f"Veriler güncellendi ve {CSV_FILENAME} dosyasına kaydedildi.")
-        except Exception as e:
-            st.error(f"Veri çekme işlemi başarısız oldu: {e}")
-            return
+    # Verilerin güncel olup olmadığını kontrol et
+    if is_data_outdated():
+        # Verileri çek
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        df, em_text, span_text, time_text = loop.run_until_complete(fetch_data())
+
+        if df is not None:
+            save_data_to_csv(df, em_text, span_text, time_text)
+        else:
+            st.error("Veri çekilemedi. Eski veriler gösteriliyor.")
+
+    # CSV dosyasından verileri yükle ve göster
+    df = load_data_from_csv()
+    if df is not None:
+        # Başlık ve tarih bilgilerini sayfada göster
+        st.subheader(df['Son Güncelleme Em'].iloc[0])
+        st.write(f"Son güncelleme: {df['Son Güncelleme Span'].iloc[0]} - {df['Son Güncelleme Tarihi'].iloc[0]}")
+
+        # Gereksiz sütunları sil
+        df = df.drop(columns=['Son Güncelleme Em', 'Son Güncelleme Span', 'Son Güncelleme Tarihi', 'Çekilme Tarihi'])
+
+        # Verileri tablo olarak göster
+        st.dataframe(df)
     else:
-        df = pd.read_csv(CSV_FILENAME)
-        last_fetched = load_last_fetched_time()
-        st.success(f"Veriler {last_fetched.strftime('%Y-%m-%d %H:%M:%S')} tarihinde çekildi.")
-
-    st.dataframe(df)
-
+        st.error("Veri yüklenemedi.")
 
 if __name__ == "__main__":
     show_page()
