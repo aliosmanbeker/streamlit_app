@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/bedelsiz_sermaye_artirimi.py" beforeDir="false" afterPath="$PROJECT_DIR$/bedelsiz_sermaye_artirimi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sermaye_artirimi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tatiller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anasayfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/anasayfa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +50,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-ce3d9afa04ac-ba05f1cad1b1-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.20224.347" />
+        <option value="bundled-python-sdk-abccbe9d933a-ba05f1cad1b1-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.20224.428" />
       </set>
     </attachedChunks>
   </component>

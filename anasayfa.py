@@ -1,7 +1,7 @@
 import streamlit as st
 
-# Sayfa yapılandırmasını ayarla
-st.set_page_config(page_title="Warrant List", page_icon="", layout="wide")
+# Sayfa yapılandırmasını ayarla (sadece burada olmalı)
+st.set_page_config(page_title="Finansal Araçlar", page_icon="", layout="wide")
 
 # Sayfa navigasyonu
 st.sidebar.title("Navigasyon")
@@ -11,7 +11,9 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Kapanışta Al Açılışta Sat Stratejisi",
     "Yükseliş Takip Stratejisi",
     "Bedelli Sermaye Artırımı Şirketleri",
-    "Bedelsiz Sermaye Artırımı Şirketleri",  # Yeni eklenen sayfa
+    "Bedelsiz Sermaye Artırımı Şirketleri",
+    "Türkiye'nin Tatilleri",
+    "Sermaye Artırımı Şirketleri",  # Yeni eklenen sayfa
     "Yeni Sayfa",
     "Warrants",
 ])
@@ -34,9 +36,15 @@ elif selected_page == "Yükseliş Takip Stratejisi":
 elif selected_page == "Bedelli Sermaye Artırımı Şirketleri":
     import bedelli_sermaye_artirimi
     bedelli_sermaye_artirimi.show_page()
-elif selected_page == "Bedelsiz Sermaye Artırımı Şirketleri":  # Yeni eklenen sayfa
+elif selected_page == "Bedelsiz Sermaye Artırımı Şirketleri":
     import bedelsiz_sermaye_artirimi
     bedelsiz_sermaye_artirimi.show_page()
+elif selected_page == "Türkiye'nin Tatilleri":
+    import tatiller
+    tatiller.show_holidays_page()
+elif selected_page == "Sermaye Artırımı Şirketleri":  # Yeni eklenen sayfa
+    import sermaye_artirimi
+    sermaye_artirimi.show_sermaye_artirimi_page()
 elif selected_page == "Yeni Sayfa":
     import yeni_sayfa
     yeni_sayfa.show_page()

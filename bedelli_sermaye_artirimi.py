@@ -1,90 +1,85 @@
 import streamlit as st
-from playwright.async_api import async_playwright
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import pandas as pd
-import asyncio
+import os
+from datetime import datetime, timedelta
+
+CSV_FILENAME = "sermaye_artirimi_verileri.csv"
+LAST_FETCHED_FILENAME = "last_fetched.txt"
 
 
-async def fetch_data():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
+def save_last_fetched_time():
+    with open(LAST_FETCHED_FILENAME, "w") as f:
+        f.write(datetime.now().isoformat())
 
-        # Web sayfasını ziyaret et
-        url = "https://halkarz.com/sermaye-artirimi/"
-        await page.goto(url)
 
-        # Sayfanın tamamen yüklendiğinden emin olun
-        await page.wait_for_load_state('networkidle')
+def load_last_fetched_time():
+    if os.path.exists(LAST_FETCHED_FILENAME):
+        with open(LAST_FETCHED_FILENAME, "r") as f:
+            return datetime.fromisoformat(f.read().strip())
+    return None
 
-        # Seçicinin var olup olmadığını kontrol et
-        table = await page.query_selector('.sal-bedelli .rwd-table')
-        title_info = await page.query_selector('.sal-bedelli .salb-title')
 
-        if table and title_info:
-            # Em ve Span etiketi içerisindeki verileri çekiyoruz
-            em_text = await title_info.eval_on_selector('em', 'el => el.textContent') or '...'
-            span_text = await title_info.eval_on_selector('span', 'el => el.textContent') or '...'
-            time_text = await title_info.eval_on_selector('time', 'el => el.textContent') or '...'
+def should_fetch_data():
+    last_fetched = load_last_fetched_time()
+    if last_fetched is None:
+        return True
+    return datetime.now() - last_fetched > timedelta(hours=24)
 
-            # Başlıkları (headers) otomatik olarak ilk <th> etiketlerinden çekiyoruz
-            headers = await table.eval_on_selector_all('tr th', 'els => els.map(el => el.textContent.trim())')
 
-            # Verileri çekiyoruz
-            rows = []
-            for row in await table.query_selector_all('tr'):
-                cols = await row.query_selector_all('td')
+def fetch_data():
+    # Tarayıcı ayarları
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
 
-                if not cols:
-                    continue
+    service = Service('path/to/chromedriver')  # Burada chromedriver yolunu belirtin
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
-                # İlk sütun: Bist Kodu ve Şirket Adı birleştiriliyor
-                bist_kodu = await cols[0].eval_on_selector('a', 'el => el.textContent') or '...'
-                sirket_adi = await cols[0].eval_on_selector('small', 'el => el.textContent') or '...'
-                ilk_sutun = f"{bist_kodu} - {sirket_adi}"
+    url = "https://halkarz.com/sermaye-artirimi/"
+    driver.get(url)
 
-                # Diğer sütunlar sırayla
-                yuzde = await cols[1].text_content() or '...'
-                tutar = await cols[2].text_content() or '...'
-                ruchan = await cols[3].text_content() or '...'
-                ykk = await cols[4].text_content() or '...'
-                spk_onay = await cols[5].text_content() or '...'
+    # Tabloyu bul
+    try:
+        table = driver.find_element(By.CSS_SELECTOR, '.sal-bedelli .rwd-table')
+        headers = [header.text.strip() for header in table.find_elements(By.CSS_SELECTOR, 'th')]
 
-                # Son sütun: Başlangıç ve bitiş tarihleri
-                if len(cols) > 6:
-                    tarih_araligi = await cols[6].text_content() or '...'
-                else:
-                    tarih_araligi = '...'
+        rows = []
+        for row in table.find_elements(By.CSS_SELECTOR, 'tr')[1:]:
+            cells = [cell.text.strip() for cell in row.find_elements(By.CSS_SELECTOR, 'td')]
+            if cells:
+                rows.append(cells)
 
-                # Verileri sıralı bir şekilde ekliyoruz
-                rows.append([ilk_sutun, yuzde, tutar, ruchan, ykk, spk_onay, tarih_araligi])
-
-            # Verileri DataFrame'e dönüştürme ve sıralama
-            df = pd.DataFrame(rows, columns=headers)
-
-            await browser.close()
-            return df, em_text, span_text, time_text
-        else:
-            await browser.close()
-            return None, None, None, None
+        df = pd.DataFrame(rows, columns=headers)
+        driver.quit()
+        return df
+    except Exception as e:
+        driver.quit()
+        raise e
 
 
 def show_page():
     st.title("Bedelli Sermaye Artırımı Yapacak Şirketler")
 
-    # Verileri çek
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    df, em_text, span_text, time_text = loop.run_until_complete(fetch_data())
-
-    if df is not None:
-        # Başlık ve tarih bilgilerini sayfada göster
-        st.subheader(em_text)
-        st.write(f"Son güncelleme: {span_text} - {time_text}")
-
-        # Verileri tablo olarak göster
-        st.dataframe(df)
+    if should_fetch_data():
+        try:
+            df = fetch_data()
+            df.to_csv(CSV_FILENAME, index=False)
+            save_last_fetched_time()
+            st.success(f"Veriler güncellendi ve {CSV_FILENAME} dosyasına kaydedildi.")
+        except Exception as e:
+            st.error(f"Veri çekme işlemi başarısız oldu: {e}")
+            return
     else:
-        st.error("Veri çekilemedi.")
+        df = pd.read_csv(CSV_FILENAME)
+        last_fetched = load_last_fetched_time()
+        st.success(f"Veriler {last_fetched.strftime('%Y-%m-%d %H:%M:%S')} tarihinde çekildi.")
+
+    st.dataframe(df)
 
 
 if __name__ == "__main__":
