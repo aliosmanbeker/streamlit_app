@@ -13,9 +13,9 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Bedelli Sermaye Artırımı Şirketleri",
     "Bedelsiz Sermaye Artırımı Şirketleri",
     "Türkiye'nin Tatilleri",
-    "Sermaye Artırımı Şirketleri",  # Yeni eklenen sayfa
-    "Yeni Sayfa",
-    "Warrants",
+    "Sermaye Artırımı Şirketleri",
+    "Haftalık Ekonomik Takvim",
+    "Warrants Listesi",  # Yeni eklenen sayfa
 ])
 
 if selected_page == "Ana Sayfa":
@@ -42,12 +42,12 @@ elif selected_page == "Bedelsiz Sermaye Artırımı Şirketleri":
 elif selected_page == "Türkiye'nin Tatilleri":
     import tatiller
     tatiller.show_holidays_page()
-elif selected_page == "Sermaye Artırımı Şirketleri":  # Yeni eklenen sayfa
+elif selected_page == "Sermaye Artırımı Şirketleri":
     import sermaye_artirimi
     sermaye_artirimi.show_sermaye_artirimi_page()
-elif selected_page == "Yeni Sayfa":
-    import yeni_sayfa
-    yeni_sayfa.show_page()
-elif selected_page == "Warrants":
-    import warrants
-    warrants.show_page()
+elif selected_page == "Haftalık Ekonomik Takvim":
+    import haberler
+    haberler.show_haberler_page()
+elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
+    import warrants_list
+    warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
