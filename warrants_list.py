@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime, timedelta
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 # Dosya adları
 viopms_file = 'EOD/BULTEN/viopms_20240924.csv'
@@ -90,27 +91,14 @@ def show_page():
     # Listeyi Oluştur butonu
     if st.button("Listeyi Oluştur"):
         islem_kodu_listesi = matching_df['ISLEM KODU'].tolist()
-        islem_kodu_string = ",".join(islem_kodu_listesi)  # Virgülle ayırarak string oluştur
+        string_of_list = str(islem_kodu_listesi).replace("'", "").replace("[", "").replace("]", "")  # Listeyi temizle ve virgülle ayır
 
-        # Kullanıcıya kopyalanabilir bir metin alanı göster
-        st.text_area("Kopyalanabilir Warrant Listesi", value=islem_kodu_string, height=100)
-        st.info("Metni seçip manuel olarak kopyalayabilirsiniz.")
+        # Kopyalanabilir bir metin alanı göster
+        st.text("Warrant Listesi: " + string_of_list)
+        st.text("Kopyalamak için aşağıdaki butona tıklayınız")
 
-        # JavaScript ile kopyalama işlemi - bu işlev çoğu tarayıcıda çalışmayabilir
-        copy_button_code = f"""
-        <script>
-        function copyToClipboard() {{
-            var copyText = `{islem_kodu_string}`;
-            navigator.clipboard.writeText(copyText).then(function() {{
-                alert('Liste panoya kopyalandı!');
-            }}, function(err) {{
-                alert('Kopyalama başarısız oldu. Lütfen elle kopyalayın.');
-            }});
-        }}
-        </script>
-        <button onclick="copyToClipboard()">Kopyala</button>
-        """
-        st.markdown(copy_button_code, unsafe_allow_html=True)
+        # Kopyala butonu (st_copy_to_clipboard kullanarak)
+        st_copy_to_clipboard(string_of_list)
 
     # Filtrelenmiş verileri göster
     st.dataframe(matching_df)

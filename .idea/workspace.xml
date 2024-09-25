@@ -5,51 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/haberler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/warrants_list.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/REQUESTED" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3-2.2.2.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_base_connection.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_collections.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_collections.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_request_methods.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_version.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/_version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/connection.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/emscripten_fetch_worker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/fetch.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/request.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/emscripten/response.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/pyopenssl.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/pyopenssl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/socks.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/contrib/socks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/exceptions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/fields.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/fields.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/filepost.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/filepost.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/http2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/poolmanager.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/poolmanager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/response.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/proxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/request.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/request.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/response.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/retry.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/retry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssl_.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssl_.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssl_match_hostname.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssl_match_hostname.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssltransport.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/ssltransport.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/timeout.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/timeout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/url.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/url.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/util.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/wait.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/lib/python3.10/site-packages/urllib3/util/wait.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anasayfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/anasayfa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warrants_list.py" beforeDir="false" afterPath="$PROJECT_DIR$/warrants_list.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
