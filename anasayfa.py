@@ -18,6 +18,7 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Warrants",
     "Yeni Sayfa",
     "Warrants Listesi",  # Yeni eklenen sayfa
+    "Varantsız Spot Listeleri"
 ])
 
 if selected_page == "Ana Sayfa":
@@ -56,6 +57,9 @@ elif selected_page == "Warrants":
 elif selected_page == "Yeni Sayfa":
     import yeni_sayfa
     yeni_sayfa.show_page()
+elif selected_page == "Varantsız Spot Listeleri":
+    import varantsız_spot
+    varantsız_spot.show_page()
 elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
     import warrants_list
     warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
