@@ -59,7 +59,7 @@ elif selected_page == "Yeni Sayfa":
     yeni_sayfa.show_page()
 elif selected_page == "Varantsız Spot Listeleri":
     import varantsız_spot
-    varantsız_spot.show_page()
+    varantsız_spot.show_varantsiz_spot_page()
 elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
     import warrants_list
     warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
