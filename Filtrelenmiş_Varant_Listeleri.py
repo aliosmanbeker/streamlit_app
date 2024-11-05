@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import re
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 def show_page():
     # Başlık ve açıklama
@@ -59,8 +60,25 @@ def show_page():
     else:
         filtered_warrants = matched_rows
 
+    # EQUITY değeri seçimi
+    equity_options = filtered_warrants['EQUITY'].unique().tolist()
+    selected_equity = st.selectbox("Bir EQUITY değeri seçin:", ["Hepsi"] + equity_options)
+
+    # Seçilen EQUITY değerine göre filtreleme
+    if selected_equity != "Hepsi":
+        filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
+
+    # Seçilen ISLEM KODU değerlerini kopyalama işlemi için listeleme
+    sozlesme_kodu_list = filtered_warrants['ISLEM KODU'].tolist()
+    string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
+
     st.subheader("Warrants List")
     st.dataframe(filtered_warrants)
+
+    # Kopyalama butonunu ekleme
+    st.text("Warrant Listesi: " + string_of_list)
+    st.text("Kopyalamak için aşağıdaki butona tıklayınız")
+    st_copy_to_clipboard(string_of_list)
 
     # ---- Bölüm 2: Varantsız Spot İşlemleri ----
     spot_list_file = 'spot_list.csv'
