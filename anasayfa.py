@@ -1,6 +1,5 @@
 import streamlit as st
 
-# Sayfa yapılandırmasını ayarla (sadece burada olmalı)
 st.set_page_config(page_title="Finansal Araçlar", page_icon="", layout="wide")
 
 # Sayfa navigasyonu
@@ -17,8 +16,9 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Haftalık Ekonomik Takvim",
     "Warrants",
     "Yeni Sayfa",
-    "Warrants Listesi",  # Yeni eklenen sayfa
-    "Varantsız Spot Listeleri"
+    "Warrants Listesi",
+    "Varantsız Spot Listeleri",
+    "Filtrelenmiş Varant Listeleri"
 ])
 
 if selected_page == "Ana Sayfa":
@@ -60,6 +60,9 @@ elif selected_page == "Yeni Sayfa":
 elif selected_page == "Varantsız Spot Listeleri":
     import varantsız_spot
     varantsız_spot.show_varantsiz_spot_page()
+elif selected_page == "Filtrelenmiş Varant Listeleri":
+    import Filtrelenmiş_Varant_Listeleri
+    Filtrelenmiş_Varant_Listeleri.show_page()
 elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
     import warrants_list
     warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
