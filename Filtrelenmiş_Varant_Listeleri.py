@@ -73,6 +73,7 @@ def show_page():
     string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
 
     st.subheader("Warrants List")
+    filtered_warrants = filtered_warrants.reset_index(drop=True)
     st.dataframe(filtered_warrants)
 
     # Kopyalama butonunu ekleme
