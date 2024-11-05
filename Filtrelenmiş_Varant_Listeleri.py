@@ -68,18 +68,21 @@ def show_page():
     if selected_equity != "Hepsi":
         filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
 
-    # Seçilen ISLEM KODU değerlerini kopyalama işlemi için listeleme
-    sozlesme_kodu_list = filtered_warrants['ISLEM KODU'].tolist()
-    string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
-
+    # Filtrelenmiş tabloyu her zaman gösteriyoruz
     st.subheader("Warrants List")
     filtered_warrants = filtered_warrants.reset_index(drop=True)
     st.dataframe(filtered_warrants)
 
-    # Kopyalama butonunu ekleme
-    st.text("Warrant Listesi: " + string_of_list)
-    st.text("Kopyalamak için aşağıdaki butona tıklayınız")
-    st_copy_to_clipboard(string_of_list)
+    # Listeyi oluştur butonunu ekliyoruz, butona basıldığında ISLEM KODU listesi ve kopyalama butonu görünüyor
+    if st.button("Warrants için Listeyi Oluştur"):
+        # ISLEM KODU listesini hazırlıyoruz
+        sozlesme_kodu_list = filtered_warrants['ISLEM KODU'].tolist()
+        string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
+
+        # Listeyi ve kopyalama butonunu gösteriyoruz
+        st.text("Warrant Listesi: " + string_of_list)
+        st.text("Kopyalamak için aşağıdaki butona tıklayınız")
+        st_copy_to_clipboard(string_of_list)
 
     # ---- Bölüm 2: Varantsız Spot İşlemleri ----
     spot_list_file = 'spot_list.csv'
@@ -111,9 +114,21 @@ def show_page():
                 not_found_df.at[index, 'BIST 30 ENDEKS'] = bist_30_value
 
     st.subheader(f"{future_option} Varantsız Spot")
+    not_found_df = not_found_df.reset_index(drop=True)
     st.dataframe(not_found_df)
 
     # ---- Bölüm 3: En Yüksek Strike Price İşlemleri ----
+    @st.cache_data
+    def load_thb_data():
+        thb_df = pd.read_csv('EOD/BULTEN/thb202411011.csv', sep=';')
+        thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
+        return thb_df
+
+    thb_df = load_thb_data()
+    date_pattern = f"P{future_option}"
+
+    # Tabloyu her zaman görüntülemek için en yüksek strike price verilerini oluşturuyoruz
+    filtered_df = thb_df[(thb_df['BIST 100 ENDEKS'] == "1") & (thb_df['ISLEM KODU'].str.endswith('.E'))].copy()
     filtered_df['ISLEM KODU'] = filtered_df['ISLEM KODU'].str.replace('.E', '', regex=False)
     filtered_df = filtered_df[['ISLEM KODU']].drop_duplicates().copy()
     warrants_data = []
@@ -146,6 +161,19 @@ def show_page():
                 'WARRANT': warrant,
             })
 
+    # Tabloyu göstermek için DataFrame'e dönüştürüyoruz ve Streamlit ile gösteriyoruz
     highest_strike_df = pd.DataFrame(warrants_data)
     st.subheader("En Yüksek Strike Price")
+    highest_strike_df = highest_strike_df.reset_index(drop=True)
     st.dataframe(highest_strike_df)
+
+    # Listeyi oluştur butonunu ekliyoruz, butona basıldığında warrant isimleri ve kopyalama butonu görüntüleniyor
+    if st.button("En Yüksek Strike Price için Listeyi Oluştur"):
+        # Listeyi hazırlıyoruz
+        sozlesme_kodu_list = highest_strike_df['WARRANT'].tolist()
+        string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
+
+        # Listeyi ve kopyalama butonunu gösteriyoruz
+        st.text("En Yüksek Strike Price Listesi: " + string_of_list)
+        st.text("Kopyalamak için aşağıdaki butona tıklayınız")
+        st_copy_to_clipboard(string_of_list)
