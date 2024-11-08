@@ -15,7 +15,7 @@ def show_page():
 
     @st.cache_data
     def load_thb_data():
-        thb_df = pd.read_csv('EOD/BULTEN/thb202411011.csv', sep=';')
+        thb_df = pd.read_csv('EOD/BULTEN/thb202411071.csv', sep=';')
         thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
         return thb_df
 
@@ -120,7 +120,7 @@ def show_page():
     # ---- Bölüm 3: En Yüksek Strike Price İşlemleri ----
     @st.cache_data
     def load_thb_data():
-        thb_df = pd.read_csv('EOD/BULTEN/thb202411011.csv', sep=';')
+        thb_df = pd.read_csv('EOD/BULTEN/thb202411071.csv', sep=';')
         thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
         return thb_df
 
