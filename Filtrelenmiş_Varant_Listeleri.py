@@ -1,28 +1,80 @@
 import streamlit as st
 import pandas as pd
 import re
+import os
+from datetime import datetime, timedelta
 from st_copy_to_clipboard import st_copy_to_clipboard
+import holidays
+from DataStore import DataStore  # DataStore sınıfını içe aktarıyoruz
+
+# Türkiye resmi tatil günlerini almak için
+turkey_holidays = holidays.Turkey()
+
+
+# Geçerli iş günü hesaplama fonksiyonu
+def get_previous_business_day():
+    previous_date = datetime.today() - timedelta(days=1)  # Başlangıçta bir gün geri git
+    while previous_date.weekday() > 4 or previous_date in turkey_holidays:  # Cumartesi, pazar veya tatil kontrolü
+        previous_date -= timedelta(days=1)
+    return previous_date.strftime('%Y%m%d')
+
+
+# Dosya adlarını ve tarih bilgilerini kontrol eden fonksiyon
+def check_and_download_thb():
+    # Önceki iş gününü al
+    previous_business_day = get_previous_business_day()
+    thb_filename = f'EOD/BULTEN/thb{previous_business_day}1.csv'
+
+    # Eğer dosya mevcut değilse veya tarihi bir önceki iş gününe ait değilse yeni dosya indir
+    if not os.path.exists(thb_filename):
+        datastore = DataStore()
+        datastore.auth()
+        datastore.download_eqty_table()
+
+        # İndirilen dosya ismini bulma
+        downloaded_files = os.listdir('EOD/BULTEN')
+        downloaded_file = [f for f in downloaded_files if f.startswith("thb") and f.endswith(".csv")]
+
+        # Eğer indirilen dosya varsa ismini düzenle
+        if downloaded_file:
+            os.rename(f'EOD/BULTEN/{downloaded_file[0]}',
+                      thb_filename)  # Dosya adını bir önceki iş gününe göre değiştiriyoruz
+        else:
+            raise FileNotFoundError("İndirilen dosya bulunamadı. DataStore indirirken bir hata olmuş olabilir.")
+
+    return thb_filename
+
+
+def load_thb_data(thb_filename):
+    # thb dosyasını yüklüyoruz
+    thb_df = pd.read_csv(thb_filename, sep=';')
+    thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
+    return thb_df
+
+
+def save_daily_data(df, filename):
+    # Mevcut tarihi bir başlık satırı olarak ekleyip CSV dosyasına kaydeder
+    today = datetime.today().strftime('%Y-%m-%d')
+    with open(filename, 'w', newline='') as f:
+        f.write(f"# Date: {today}\n")  # Tarih bilgisi başa eklenir
+        df.to_csv(f, index=False)
+
 
 def show_page():
     # Başlık ve açıklama
     st.title("Warrants List & Varantsız Spot İnceleme")
     st.write("CSV dosyalarındaki warrant ve spot bilgilerini görüntüleyin ve filtreleyin.")
 
-    # Kullanıcının tarih seçimi yapabileceği bir seçenek
+    # Tarih seçimi
     future_option = st.selectbox("Lütfen bir tarih seçin:", ["291124", "311224"])
+
+    # Güncel thb dosyasını al ve veriyi yükle
+    thb_filename = check_and_download_thb()
+    thb_df = load_thb_data(thb_filename)
+    date_pattern = f"P{future_option}"
 
     # ---- Bölüm 1: warrants_list İşlemleri ----
 
-    @st.cache_data
-    def load_thb_data():
-        thb_df = pd.read_csv('EOD/BULTEN/thb202411071.csv', sep=';')
-        thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
-        return thb_df
-
-    thb_df = load_thb_data()
-    date_pattern = f"P{future_option}"
-
-    # BIST 100 ENDEKS sütununda değeri 1 olan ve ISLEM KODU sütununda .E ile biten verileri filtrele
     filtered_df = thb_df[(thb_df['BIST 100 ENDEKS'] == "1") & (thb_df['ISLEM KODU'].str.endswith('.E'))].copy()
     filtered_df[['ISLEM KODU']].to_csv('filtered_islem_kodu.csv', index=False)
     filtered_islem_kodu_df = pd.read_csv('filtered_islem_kodu.csv')
@@ -49,6 +101,9 @@ def show_page():
     matched_rows['CLOSING PRICE'] = pd.to_numeric(matched_rows['CLOSING PRICE'], errors='coerce')
     matched_rows['RATIO'] = ((matched_rows['STRIKE PRICE'] / matched_rows['CLOSING PRICE']) - 1).round(2)
 
+    # Veriyi warrant_list.csv dosyasına kaydet
+    save_daily_data(matched_rows, 'EOD/BULTEN/warrant_list.csv')
+
     # RATIO filtresi
     ratio_filter = st.selectbox("RATIO filtresi seçin:", ["Hepsi", "0 - 0.1", "0.1 - 0.2", "0.2 ve üzeri"])
     if ratio_filter == "0 - 0.1":
@@ -60,28 +115,19 @@ def show_page():
     else:
         filtered_warrants = matched_rows
 
-    # EQUITY değeri seçimi
+    # EQUITY seçimi
     equity_options = filtered_warrants['EQUITY'].unique().tolist()
     selected_equity = st.selectbox("Bir EQUITY değeri seçin:", ["Hepsi"] + equity_options)
-
-    # Seçilen EQUITY değerine göre filtreleme
     if selected_equity != "Hepsi":
         filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
 
-    # Filtrelenmiş tabloyu her zaman gösteriyoruz
     st.subheader("Warrants List")
-    filtered_warrants = filtered_warrants.reset_index(drop=True)
     st.dataframe(filtered_warrants)
 
-    # Listeyi oluştur butonunu ekliyoruz, butona basıldığında ISLEM KODU listesi ve kopyalama butonu görünüyor
     if st.button("Warrants için Listeyi Oluştur"):
-        # ISLEM KODU listesini hazırlıyoruz
         sozlesme_kodu_list = filtered_warrants['ISLEM KODU'].tolist()
         string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
-
-        # Listeyi ve kopyalama butonunu gösteriyoruz
         st.text("Warrant Listesi: " + string_of_list)
-        st.text("Kopyalamak için aşağıdaki butona tıklayınız")
         st_copy_to_clipboard(string_of_list)
 
     # ---- Bölüm 2: Varantsız Spot İşlemleri ----
@@ -108,26 +154,19 @@ def show_page():
             underlying_asset = row['DAYANAK VARLIK'] + '.E'
             if thb_df['ISLEM KODU'].str.contains(underlying_asset, na=False).any():
                 matched_rows = thb_df[thb_df['ISLEM KODU'].str.contains(underlying_asset, na=False)].copy()
-                bist_100_value = matched_rows['BIST 100 ENDEKS'].iloc[0] if not matched_rows['BIST 100 ENDEKS'].empty else ''
-                bist_30_value = matched_rows['BIST 30 ENDEKS'].iloc[0] if not matched_rows['BIST 30 ENDEKS'].empty else ''
+                bist_100_value = matched_rows['BIST 100 ENDEKS'].iloc[0] if not matched_rows[
+                    'BIST 100 ENDEKS'].empty else ''
+                bist_30_value = matched_rows['BIST 30 ENDEKS'].iloc[0] if not matched_rows[
+                    'BIST 30 ENDEKS'].empty else ''
                 not_found_df.at[index, 'BIST 100 ENDEKS'] = bist_100_value
                 not_found_df.at[index, 'BIST 30 ENDEKS'] = bist_30_value
 
     st.subheader(f"{future_option} Varantsız Spot")
-    not_found_df = not_found_df.reset_index(drop=True)
     st.dataframe(not_found_df)
+    save_daily_data(not_found_df, 'EOD/BULTEN/spot_list.csv')
 
     # ---- Bölüm 3: En Yüksek Strike Price İşlemleri ----
-    @st.cache_data
-    def load_thb_data():
-        thb_df = pd.read_csv('EOD/BULTEN/thb202411071.csv', sep=';')
-        thb_df.columns = thb_df.columns.str.replace(' +', ' ', regex=True)
-        return thb_df
 
-    thb_df = load_thb_data()
-    date_pattern = f"P{future_option}"
-
-    # Tabloyu her zaman görüntülemek için en yüksek strike price verilerini oluşturuyoruz
     filtered_df = thb_df[(thb_df['BIST 100 ENDEKS'] == "1") & (thb_df['ISLEM KODU'].str.endswith('.E'))].copy()
     filtered_df['ISLEM KODU'] = filtered_df['ISLEM KODU'].str.replace('.E', '', regex=False)
     filtered_df = filtered_df[['ISLEM KODU']].drop_duplicates().copy()
@@ -161,19 +200,13 @@ def show_page():
                 'WARRANT': warrant,
             })
 
-    # Tabloyu göstermek için DataFrame'e dönüştürüyoruz ve Streamlit ile gösteriyoruz
     highest_strike_df = pd.DataFrame(warrants_data)
     st.subheader("En Yüksek Strike Price")
-    highest_strike_df = highest_strike_df.reset_index(drop=True)
     st.dataframe(highest_strike_df)
+    save_daily_data(highest_strike_df, 'EOD/BULTEN/highest_strike_price.csv')
 
-    # Listeyi oluştur butonunu ekliyoruz, butona basıldığında warrant isimleri ve kopyalama butonu görüntüleniyor
     if st.button("En Yüksek Strike Price için Listeyi Oluştur"):
-        # Listeyi hazırlıyoruz
         sozlesme_kodu_list = highest_strike_df['WARRANT'].tolist()
         string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
-
-        # Listeyi ve kopyalama butonunu gösteriyoruz
         st.text("En Yüksek Strike Price Listesi: " + string_of_list)
-        st.text("Kopyalamak için aşağıdaki butona tıklayınız")
         st_copy_to_clipboard(string_of_list)
