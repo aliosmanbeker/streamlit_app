@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder
+
 
 def show_page():
     st.title("Yeni Sayfa")
@@ -20,17 +20,35 @@ def show_page():
 
     if selected_file:
         st.write(f"Seçilen Dosya: {selected_file}")
-        # Dosyayı yükleyin ve görüntüleyin
+
+        # Dosya yolunu belirleyin
         file_path = f"datas/{selected_file}"
+
         try:
-            df = pd.read_excel(file_path)
-            df = df.reset_index(drop=True)  # Indeks numaralarını gizle
+            # Dosyayı yükleyin ve yalnızca ilk iki sütunu alın
+            df = pd.read_excel(file_path, usecols=[0, 1])  # İlk iki sütunu seçiyoruz
 
-            gb = GridOptionsBuilder.from_dataframe(df)
-            gb.configure_pagination()
-            gb.configure_default_column(editable=True, groupable=True, filter=True)
-            grid_options = gb.build()
+            # Indeks sütununu kaldırıyoruz
+            df = df.reset_index(drop=True)
 
-            AgGrid(df, gridOptions=grid_options, height=800, width='100%')
+            # Her bir sütunun veri türünü ayarlıyoruz
+            for column in df.columns:
+                # Sadece sayısal veriler içeriyorsa float'a çevir
+                if pd.to_numeric(df[column], errors='coerce').notna().all():
+                    df[column] = pd.to_numeric(df[column], errors='coerce')
+                else:
+                    # Metin içeren sütunlar için string olarak ayarla
+                    df[column] = df[column].astype(str)
+
+            # Tüm hücreleri ortalamak için stil uygulayın
+            styled_df = df.style.set_properties(**{'text-align': 'center'})  # Ortalamak için stil uygula
+            styled_df.set_table_styles([{
+                'selector': 'th',
+                'props': [('text-align', 'center')]
+            }])
+
+            # Streamlit tablosu olarak göster
+            st.table(styled_df)
+
         except Exception as e:
             st.error(f"Dosya yüklenirken bir hata oluştu: {e}")
