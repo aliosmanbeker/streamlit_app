@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from st_copy_to_clipboard import st_copy_to_clipboard
 import holidays
 from DataStore import DataStore  # DataStore sınıfını içe aktarıyoruz
-
 # Türkiye resmi tatil günlerini almak için
 turkey_holidays = holidays.Turkey()
+
 
 
 # Geçerli iş günü hesaplama fonksiyonu
@@ -61,6 +61,7 @@ def save_daily_data(df, filename):
 
 
 def show_page():
+
     # Başlık ve açıklama
     st.title("Warrants List & Varantsız Spot İnceleme")
     st.write("CSV dosyalarındaki warrant ve spot bilgilerini görüntüleyin ve filtreleyin.")
@@ -92,7 +93,7 @@ def show_page():
                 lambda x: re.search(rf'{equity_name}{date_pattern}0*(\d+\.\d+)', x).group(1) if re.search(
                     rf'{equity_name}{date_pattern}0*(\d+\.\d+)', x) else None
             )
-            closing_price = thb_df.loc[thb_df['ISLEM KODU'] == equity_name_with_e, 'ONCEKI KAPANIS FIYATI']
+            closing_price = thb_df.loc[thb_df['ISLEM KODU'] == equity_name_with_e, 'KAPANIS FIYATI']
             if not closing_price.empty:
                 matches['CLOSING PRICE'] = closing_price.values[0]
             matched_rows = pd.concat([matched_rows, matches[['EQUITY', 'ISLEM KODU', 'STRIKE PRICE', 'CLOSING PRICE']]])
