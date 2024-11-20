@@ -114,7 +114,7 @@ def show_page():
     elif ratio_filter == "0.2 ve üzeri":
         filtered_warrants = matched_rows[matched_rows['RATIO'] > 0.20]
     else:
-        filtered_warrants = matched_rows
+        filtered_warrants = matched_rows[matched_rows['RATIO'] > 0]
 
     # EQUITY seçimi
     equity_options = filtered_warrants['EQUITY'].unique().tolist()

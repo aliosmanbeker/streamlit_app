@@ -8,10 +8,12 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202409231.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202410181.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202411081.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202411111.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri.py" beforeDir="false" afterPath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anasayfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/anasayfa.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/haftalik_ekonomik_takvim.csv" beforeDir="false" afterPath="$PROJECT_DIR$/haftalik_ekonomik_takvim.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filtered_islem_kodu.csv" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_islem_kodu.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
