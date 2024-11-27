@@ -106,15 +106,17 @@ def show_page():
     save_daily_data(matched_rows, 'EOD/BULTEN/warrant_list.csv')
 
     # RATIO filtresi
-    ratio_filter = st.selectbox("RATIO filtresi seçin:", ["Hepsi", "0 - 0.1", "0.1 - 0.2", "0.2 ve üzeri"])
+    ratio_filter = st.selectbox("RATIO filtresi seçin:", ["Hepsi", "0 - 0.1", "0.1 - 0.2", "0.2 ve üzeri","0'üzeri"])
     if ratio_filter == "0 - 0.1":
         filtered_warrants = matched_rows[(matched_rows['RATIO'] >= 0.00) & (matched_rows['RATIO'] <= 0.10)]
     elif ratio_filter == "0.1 - 0.2":
         filtered_warrants = matched_rows[(matched_rows['RATIO'] > 0.10) & (matched_rows['RATIO'] <= 0.20)]
     elif ratio_filter == "0.2 ve üzeri":
         filtered_warrants = matched_rows[matched_rows['RATIO'] > 0.20]
-    else:
+    elif ratio_filter == "0'üzeri":
         filtered_warrants = matched_rows[matched_rows['RATIO'] > 0]
+    else:
+        filtered_warrants = matched_rows
 
     # EQUITY seçimi
     equity_options = filtered_warrants['EQUITY'].unique().tolist()
