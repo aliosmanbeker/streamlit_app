@@ -67,7 +67,7 @@ def show_page():
     st.write("CSV dosyalarındaki warrant ve spot bilgilerini görüntüleyin ve filtreleyin.")
 
     # Tarih seçimi
-    future_option = st.selectbox("Lütfen bir tarih seçin:", ["291124", "311224"])
+    future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "311224"])
 
     # Güncel thb dosyasını al ve veriyi yükle
     thb_filename = check_and_download_thb()

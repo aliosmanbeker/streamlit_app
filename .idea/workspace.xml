@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202411191.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri.py" beforeDir="false" afterPath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,17 +37,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/beker/PycharmProjects/Scraping&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/beker/PycharmProjects/spot1.2<strike"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-d7ad00fb9fc3-c546a90a8094-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.23726.102" />
+        <option value="bundled-python-sdk-6a3326d57233-c546a90a8094-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.24807.21" />
       </set>
     </attachedChunks>
   </component>
