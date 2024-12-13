@@ -20,6 +20,14 @@ def get_previous_business_day():
 
 
 # Dosya adlarını ve tarih bilgilerini kontrol eden fonksiyon
+import os
+import re
+from datetime import datetime
+
+import os
+from datetime import datetime
+
+
 def check_and_download_thb():
     # Önceki iş gününü al
     previous_business_day = get_previous_business_day()
@@ -35,10 +43,9 @@ def check_and_download_thb():
         downloaded_files = os.listdir('EOD/BULTEN')
         downloaded_file = [f for f in downloaded_files if f.startswith("thb") and f.endswith(".csv")]
 
-        # Eğer indirilen dosya varsa ismini düzenle
+        # Dosya adını ekrana yazdırma
         if downloaded_file:
-            os.rename(f'EOD/BULTEN/{downloaded_file[0]}',
-                      thb_filename)  # Dosya adını bir önceki iş gününe göre değiştiriyoruz
+            print(f"Indirilen dosya: {downloaded_file[0]}")
         else:
             raise FileNotFoundError("İndirilen dosya bulunamadı. DataStore indirirken bir hata olmuş olabilir.")
 
@@ -124,6 +131,7 @@ def show_page():
     if selected_equity != "Hepsi":
         filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
 
+    filtered_warrants.reset_index(drop=True, inplace=True)
     st.subheader("Warrants List")
     st.dataframe(filtered_warrants)
 
@@ -168,48 +176,61 @@ def show_page():
     st.dataframe(not_found_df)
     save_daily_data(not_found_df, 'EOD/BULTEN/spot_list.csv')
 
-    # ---- Bölüm 3: En Yüksek Strike Price İşlemleri ----
+    # ---- Bölüm 3: En Yüksek Strike Price ve Ratio Hesaplama ----
 
     filtered_df = thb_df[(thb_df['BIST 100 ENDEKS'] == "1") & (thb_df['ISLEM KODU'].str.endswith('.E'))].copy()
-    filtered_df['ISLEM KODU'] = filtered_df['ISLEM KODU'].str.replace('.E', '', regex=False)
-    filtered_df = filtered_df[['ISLEM KODU']].drop_duplicates().copy()
-    warrants_data = []
+    filtered_df[['ISLEM KODU']].to_csv('filtered_islem_kodu.csv', index=False)
+    filtered_islem_kodu_df = pd.read_csv('filtered_islem_kodu.csv')
 
-    for i, row in filtered_df.iterrows():
-        equity = row['ISLEM KODU']
-        matches = thb_df[thb_df['BULTEN ADI'].str.contains(equity, na=False)].copy()
-        warrant_rows = matches[matches['ENSTRUMAN GRUBU'] == 'EPW']
-        max_strike_price = None
-        selected_warrants = []
+    warrants_data = pd.DataFrame(columns=['EQUITY', 'ISLEM KODU', 'STRIKE PRICE', 'CLOSING PRICE'])
 
-        for _, warrant_row in warrant_rows.iterrows():
-            bulten_adi = warrant_row['BULTEN ADI']
-            date_match = re.search(r'(\d{6})', bulten_adi)
-            strike_price_match = re.search(r'(\d+\.\d+)', bulten_adi)
+    date_pattern = f"P{future_option}"
 
-            if date_match and strike_price_match:
-                date_part = date_match.group(1)
-                strike_price = float(strike_price_match.group(1))
-                if date_part.endswith(future_option):
-                    if max_strike_price is None or strike_price > max_strike_price:
-                        max_strike_price = strike_price
-                        selected_warrants = [warrant_row['ISLEM KODU']]
-                    elif strike_price == max_strike_price:
-                        selected_warrants.append(warrant_row['ISLEM KODU'])
+    for islem_kodu in filtered_islem_kodu_df['ISLEM KODU']:
+        equity_name_with_e = islem_kodu.replace('.E', '') + '.E'
+        equity_name = equity_name_with_e.replace('.E', '')
+        matches = thb_df[
+            thb_df['BULTEN ADI'].str.contains(equity_name) & thb_df['BULTEN ADI'].str.contains(date_pattern)
+            ].copy()
 
-        for warrant in selected_warrants:
-            warrants_data.append({
-                'ISLEM KODU': equity,
-                'WARRANT': warrant,
-            })
+        if not matches.empty:
+            matches['EQUITY'] = equity_name_with_e
+            matches['STRIKE PRICE'] = matches['BULTEN ADI'].apply(
+                lambda x: re.search(rf'{equity_name}{date_pattern}0*(\d+\.\d+)', x).group(1) if re.search(
+                    rf'{equity_name}{date_pattern}0*(\d+\.\d+)', x) else None
+            )
+            closing_price = thb_df.loc[thb_df['ISLEM KODU'] == equity_name_with_e, 'KAPANIS FIYATI']
+            if not closing_price.empty:
+                matches['CLOSING PRICE'] = closing_price.values[0]
 
-    highest_strike_df = pd.DataFrame(warrants_data)
+            # Strike Price'ları numerik yap ve en yüksek değeri bul
+            matches['STRIKE PRICE'] = pd.to_numeric(matches['STRIKE PRICE'], errors='coerce')
+            max_strike_price = matches['STRIKE PRICE'].max()
+            highest_strike_matches = matches[matches['STRIKE PRICE'] == max_strike_price]
+
+            # En yüksek Strike Price'a sahip warrantları ekle
+            warrants_data = pd.concat([
+                warrants_data,
+                highest_strike_matches[['EQUITY', 'ISLEM KODU', 'STRIKE PRICE', 'CLOSING PRICE']]
+            ])
+
+    # Ratio hesaplama
+    warrants_data['CLOSING PRICE'] = pd.to_numeric(warrants_data['CLOSING PRICE'], errors='coerce')
+    warrants_data['RATIO'] = ((warrants_data['STRIKE PRICE'] / warrants_data['CLOSING PRICE']) - 1).round(2)
+
+    warrants_data.reset_index(drop=True, inplace=True)
+
+    # En yüksek ratio'ya sahip warrantları ekle
     st.subheader("En Yüksek Strike Price")
-    st.dataframe(highest_strike_df)
-    save_daily_data(highest_strike_df, 'EOD/BULTEN/highest_strike_price.csv')
+    st.dataframe(warrants_data)
+
+    save_daily_data(warrants_data, 'EOD/BULTEN/highest_strike_price.csv')
 
     if st.button("En Yüksek Strike Price için Listeyi Oluştur"):
-        sozlesme_kodu_list = highest_strike_df['WARRANT'].tolist()
+        sozlesme_kodu_list = warrants_data['ISLEM KODU'].tolist()
         string_of_list = str(sozlesme_kodu_list).replace("'", "").replace("[", "").replace("]", "")
         st.text("En Yüksek Strike Price Listesi: " + string_of_list)
         st_copy_to_clipboard(string_of_list)
+
+
+
