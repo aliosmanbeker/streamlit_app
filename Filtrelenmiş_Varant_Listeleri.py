@@ -281,10 +281,13 @@ def show_page():
                 matches[['EQUITY', 'ISLEM KODU', 'STRIKE PRICE', 'CLOSING PRICE', 'FUTURE']]
             ])
 
-    # Ratio hesaplama
+    # Sadece aynı equity değeri için en yüksek Strike Price'ı seç, aynı Strike Price'lı birden fazla varantı dahil et
     warrants_data['STRIKE PRICE'] = pd.to_numeric(warrants_data['STRIKE PRICE'], errors='coerce')
     warrants_data['CLOSING PRICE'] = pd.to_numeric(warrants_data['CLOSING PRICE'], errors='coerce')
     warrants_data['RATIO'] = ((warrants_data['STRIKE PRICE'] / warrants_data['CLOSING PRICE']) - 1).round(2)
+
+    warrants_data = warrants_data[
+        warrants_data['STRIKE PRICE'] == warrants_data.groupby('EQUITY')['STRIKE PRICE'].transform('max')]
 
     warrants_data.reset_index(drop=True, inplace=True)
 
@@ -307,3 +310,4 @@ def show_page():
         futures_string = ",".join(futures_list)
         st.write("Future Listesini Kopyala:")
         st_copy_to_clipboard(futures_string)
+
