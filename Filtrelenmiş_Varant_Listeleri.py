@@ -87,7 +87,7 @@ def show_page():
 
     # Başlık ve açıklama
     st.title("Warrants List & Varantsız Spot İnceleme")
-    st.write("CSV dosyalarındaki warrant ve spot bilgilerini görüntüleyin ve filtreleyin.")
+    st.write("Arkhon için gerekli warrant ve varantsız spot verilerini gösterir.")
 
     # Tarih seçimi
     future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "311224"])
