@@ -171,33 +171,32 @@ def show_page():
     else:
         filtered_warrants = matched_rows
 
-        # EQUITY seçimi
-        equity_options = filtered_warrants['EQUITY'].unique().tolist()
-        selected_equity = st.selectbox("Bir EQUITY değeri seçin:", ["Hepsi"] + equity_options)
-        if selected_equity != "Hepsi":
-            filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
+    # EQUITY seçimi
+    equity_options = filtered_warrants['EQUITY'].unique().tolist()
+    selected_equity = st.selectbox("Bir EQUITY değeri seçin:", ["Hepsi"] + equity_options)
+    if selected_equity != "Hepsi":
+        filtered_warrants = filtered_warrants[filtered_warrants['EQUITY'] == selected_equity]
 
-        filtered_warrants.reset_index(drop=True, inplace=True)
-        st.subheader("Warrants & Futures List")
-        st.dataframe(filtered_warrants)
+    filtered_warrants.reset_index(drop=True, inplace=True)
+    st.subheader("Warrants & Futures List")
+    st.dataframe(filtered_warrants)
 
-        # Liste oluşturma ve kopyalama
-        if st.button("Listeyi Oluştur"):
-            combined_list = filtered_warrants[['ISLEM KODU', 'FUTURE']].dropna().melt(value_name='Code')[
-                'Code'].unique()
-            combined_string = ",".join(combined_list)
-            st.text("Warrant ve Future Listesi: " + combined_string)
+    # Liste oluşturma ve kopyalama
+    if st.button("Listeyi Oluştur"):
+        combined_list = filtered_warrants[['ISLEM KODU', 'FUTURE']].dropna().melt(value_name='Code')[
+            'Code'].unique()
+        combined_string = ",".join(combined_list)
+        st.text("Warrant ve Future Listesi: " + combined_string)
 
-            warrant_list = filtered_warrants['ISLEM KODU'].dropna().tolist()
-            warrant_string = ",".join(warrant_list)
-            st.write("Warrant Listesini Kopyala:")
-            st_copy_to_clipboard(warrant_string)
+        warrant_list = filtered_warrants['ISLEM KODU'].dropna().tolist()
+        warrant_string = ",".join(warrant_list)
+        st.write("Warrant Listesini Kopyala:")
+        st_copy_to_clipboard(warrant_string)
 
-            futures_list = filtered_warrants['FUTURE'].dropna().unique().tolist()
-            futures_string = ",".join(futures_list)
-            st.write("Future Listesini Kopyala:")
-            st_copy_to_clipboard(futures_string)
-
+        futures_list = filtered_warrants['FUTURE'].dropna().unique().tolist()
+        futures_string = ",".join(futures_list)
+        st.write("Future Listesini Kopyala:")
+        st_copy_to_clipboard(futures_string)
 
 
     # ---- Bölüm 2: Varantsız Spot İşlemleri ----
