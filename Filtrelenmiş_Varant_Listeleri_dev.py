@@ -91,7 +91,7 @@ def show_page():
     st.write("DEVELOPMENT VERSION")
 
     # Tarih seçimi
-    future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "311224"])
+    future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "280225"])
 
     # Güncel thb ve viopms dosyalarını al ve veriyi yükle
     thb_filename = check_and_download_thb()
@@ -171,6 +171,7 @@ def show_page():
     else:
         filtered_warrants = matched_rows
 
+    filtered_warrants.reset_index(drop=True, inplace=True)
     # EQUITY seçimi
     equity_options = filtered_warrants['EQUITY'].unique().tolist()
     selected_equity = st.selectbox("Bir EQUITY değeri seçin:", ["Hepsi"] + equity_options)
@@ -229,6 +230,7 @@ def show_page():
                     'BIST 30 ENDEKS'].empty else ''
                 not_found_df.at[index, 'BIST 100 ENDEKS'] = bist_100_value
                 not_found_df.at[index, 'BIST 30 ENDEKS'] = bist_30_value
+                not_found_df.reset_index(drop=True)
 
     st.subheader(f"{future_option} Varantsız Spot")
     st.dataframe(not_found_df)

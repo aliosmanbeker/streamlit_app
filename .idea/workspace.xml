@@ -5,8 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="646ac75e-240c-47aa-bf68-8f96b6f6d1f3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/.~lock.thb202412231.csv#" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/.~lock.viopms_20241224.csv#" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/highest_strike_price.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/spot_list.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202412061.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202412121.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202412231.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/thb202412241.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/viopms_20240924.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/viopms_20241018.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/viopms_20241108.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/viopms_20241224.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/viopms_20241225.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/EOD/BULTEN/warrant_list.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri_dev.py" beforeDir="false" afterPath="$PROJECT_DIR$/Filtrelenmiş_Varant_Listeleri_dev.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,15 +49,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.Filtrelenmiş_Varant_Listeleri.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/beker/PycharmProjects/spot1.2&lt;strike&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.Filtrelenmiş_Varant_Listeleri.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/beker/PycharmProjects/Scraping"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Filtrelenmiş_Varant_Listeleri" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Scraping" />
