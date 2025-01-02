@@ -90,7 +90,7 @@ def show_page():
     st.write("Arkhon için gerekli warrant ve varantsız spot verilerini gösterir.")
 
     # Tarih seçimi
-    future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "311224"])
+    future_option = st.selectbox("Lütfen bir tarih seçin:", ["310125", "280225"])
 
     # Güncel thb ve viopms dosyalarını al ve veriyi yükle
     thb_filename = check_and_download_thb()
@@ -125,7 +125,7 @@ def show_page():
                 matches['CLOSING PRICE'] = closing_price.values[0]
 
             # Future Bilgisini Ekleme
-            future_filter = future_option[-4:]  # Örn: "1224" veya "0125"
+            future_filter = future_option[-4:]  # Örn: "0225" veya "0125"
 
             future_row = viopms_df[
                 (viopms_df['DAYANAK VARLIK'] == equity_name_with_e) &

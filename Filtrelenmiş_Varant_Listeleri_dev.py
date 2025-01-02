@@ -126,7 +126,7 @@ def show_page():
                 matches['CLOSING PRICE'] = closing_price.values[0]
 
             # Future Bilgisini Ekleme
-            future_filter = future_option[-4:]  # Örn: "1224" veya "0125"
+            future_filter = future_option[-4:]  # Örn: "0225" veya "0125"
 
             future_row = viopms_df[
                 (viopms_df['DAYANAK VARLIK'] == equity_name_with_e) &
