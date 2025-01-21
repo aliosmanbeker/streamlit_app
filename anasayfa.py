@@ -20,7 +20,8 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Filtrelenmiş Varant Listeleri",
     "DEV-Filtrelenmiş Varant Listeleri",
     "Filtrelenmiş CallVarant Listeleri",
-    "DEV-Filtrelenmiş CallVarant Listeleri"
+    "DEV-Filtrelenmiş CallVarant Listeleri",
+    "Filtrelenmiş Ağ Grafiği"
 ])
 
 if selected_page == "Ana Sayfa":
@@ -74,6 +75,9 @@ elif selected_page == "Filtrelenmiş CallVarant Listeleri":
 elif selected_page == "DEV-Filtrelenmiş CallVarant Listeleri":
     import Filtrelenmiş_Varant_Listeleri_CALL_dev
     Filtrelenmiş_Varant_Listeleri_CALL_dev.show_page()
+elif selected_page == "Filtrelenmiş Ağ Grafiği":  # Yeni sayfa kontrolü
+    import filtered_graph
+    filtered_graph.show_page()
 # elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
 #     import warrants_list
 #     warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
