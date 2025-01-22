@@ -1,121 +1,112 @@
-import streamlit as st
 import os
-import pandas as pd
 from datetime import datetime
 from DataStore import DataStore
+import pandas as pd
+import streamlit as st
 
-# Streamlit sayfasını tanımlayın
 def main():
-    st.title("VIOP ve Hisse Senedi Verileri")
-
     # DataStore sınıfından bir örnek oluştur
     datastore = DataStore()
 
-    # Authentication yap, API erişimi için giriş işlemi
-    st.write("Oturum açılıyor...")
+    # Authentication yap, gerekli durumlar için login olmak gerekebilir
     datastore.auth()
 
-    def check_file_date(file_name):
-        """
-        Dosya adındaki tarihin bugünün tarihi ile eşleşip eşleşmediğini kontrol eder.
-        """
-        try:
-            file_date_str = file_name.split('_')[-1].split('.')[0]  # Tarih kısmını ayıkla
-            file_date = datetime.strptime(file_date_str, '%Y%m%d').date()
-            today = datetime.today().date()
-            return file_date == today
-        except Exception as e:
-            st.write(f"Tarih kontrolü sırasında hata oluştu: {e}")
-            return False
+    # Bugünün tarihini al
+    today = datetime.today().strftime('%Y%m%d')
 
-    def download_eqty_and_viop_tables():
-        eqty_path = './EOD/BULTEN'
-        viop_path = './EOD/BULTEN'
+    # Kontrol edilecek dosyanın ismi
+    viopms_file = './EOD/BULTEN/viopms_20250122.csv'
 
-        os.makedirs(eqty_path, exist_ok=True)  # Klasör yoksa oluştur
-        os.makedirs(viop_path, exist_ok=True)  # Klasör yoksa oluştur
+    # Dosyanın var olup olmadığını kontrol et
+    if os.path.exists(viopms_file):
+        # Dosya adındaki tarihi al
+        file_date = viopms_file.split('_')[-1].split('.')[0]
 
-        eqty_files = [f for f in os.listdir(eqty_path) if f.startswith('thb') and f.endswith('.zip')]
-        viop_files = [f for f in os.listdir(viop_path) if f.startswith('viopms') and f.endswith('.csv')]
+        # Dosya tarihi bugünün tarihiyle eşleşiyorsa indirme işlemi yapılmaz
+        if file_date == today:
+            print("Dosya güncel. İşlem devam ediyor...")
+        else:
+            print("Dosya tarihi güncel değil. İndirme işlemi başlatılıyor...")
+            datastore.download_eqty_table()
+            datastore.download_viopms_table()
+            indexes = datastore.get_indexes()
+            indexes.to_csv("./EOD/BULTEN/endeks_tablosu.csv", index=False)
+    else:
+        print("Dosya bulunamadı. İndirme işlemi başlatılıyor...")
+        datastore.download_eqty_table()
+        datastore.download_viopms_table()
+        indexes = datastore.get_indexes()
+        indexes.to_csv("./EOD/BULTEN/endeks_tablosu.csv", index=False)
 
-        if viop_files and check_file_date(viop_files[0]):
-            st.write("VIOPMS dosyası bugünün tarihi ile eşleşiyor. Hiçbir dosya indirilmedi.")
-            return
+    # Endeks Tablosu'nu yükle
+    endeks_dosyasi = "./EOD/BULTEN/endeks_tablosu.csv"
+    if os.path.exists(endeks_dosyasi):
+        indexes = pd.read_csv(endeks_dosyasi)
+        print("Endeks Tablosu yüklendi.")
+    else:
+        print("Endeks tablosu bulunamadı, işlem gerçekleştirilemiyor.")
+        return
 
-        st.write("VIOPMS dosyası güncel değil, dosyalar indiriliyor...")
-        datastore.download_viopms_table()  # VIOP dosyasını indir
-        datastore.download_eqty_table()  # Hisse senedi dosyasını indir
-        st.write("VIOP ve Hisse Senedi tabloları başarıyla indirildi.")
+    # Endeks Tablosu'ndan sonu .E ile biten EQUITY CODE değerlerini filtrele
+    filtered_indexes = indexes[indexes['EQUITY CODE'].str.endswith('.E', na=False)]
 
-    def process_thb_file():
-        st.write("THB dosyası işleniyor...")
-        thb_path = './EOD/BULTEN'
-        viop_path = './EOD/BULTEN'
+    # Sadece belirli INDICES değerlerini içerenleri filtrele
+    valid_indices = ["BIST 100", "BIST 50", "BIST 30"]
+    filtered_indexes = filtered_indexes[filtered_indexes['INDICES'].isin(valid_indices)]
 
-        thb_files = [f for f in os.listdir(thb_path) if f.startswith('thb') and f.endswith('.csv')]
-        viop_files = [f for f in os.listdir(viop_path) if f.startswith('viopms') and f.endswith('.csv')]
+    # Öncelikli sıralama: BIST 30 > BIST 50 > BIST 100
+    priority_mapping = {"BIST 30": 1, "BIST 50": 2, "BIST 100": 3}
+    filtered_indexes['PRIORITY'] = filtered_indexes['INDICES'].map(priority_mapping)
 
-        if not thb_files:
-            st.write("THB dosyası bulunamadı!")
-            return
+    # Alfabetik sıralama ve öncelik sırasına göre sıralama
+    filtered_indexes = filtered_indexes.sort_values(by=['EQUITY CODE', 'PRIORITY']).drop_duplicates(subset=['EQUITY CODE'], keep='first')
 
-        if not viop_files:
-            st.write("VIOPMS dosyası bulunamadı!")
-            return
+    # EQUITY CODE ve INDICES sütunlarını seç
+    filtered_data = filtered_indexes[['EQUITY CODE', 'INDICES']]
 
-        thb_file = os.path.join(thb_path, thb_files[0])  # İlk bulunan THB dosyasını seç
-        viop_file = os.path.join(viop_path, viop_files[0])  # İlk bulunan VIOPMS dosyasını seç
+    # VIOPMS dosyasını yükle
+    if os.path.exists(viopms_file):
+        with open(viopms_file, 'r', encoding='utf-8') as file:
+            header = file.readline().strip().split(',')
+            if 'DAYANAK VARLIK' in header and 'SOZLESME KODU' in header:
+                viopms_data = pd.read_csv(viopms_file, delimiter=',', skiprows=1, names=header)
+                print("VIOPMS Tablosu başarıyla yüklendi.")
+            else:
+                print("Gerekli sütunlar bulunamadı: DAYANAK VARLIK veya SOZLESME KODU eksik.")
+                return
+    else:
+        print("VIOPMS tablosu bulunamadı, işlem gerçekleştirilemiyor.")
+        return
 
-        # THB ve VIOPMS dosyalarını yükle
-        thb_data = pd.read_csv(thb_file, delimiter=';', encoding='utf-8')
-        viop_data = pd.read_csv(viop_file, delimiter=',', encoding='utf-8')  # ',' olarak değiştirdik
+    # FILTERED dosyasına yeni sütun ekle
+    expanded_data = []
 
-        # Sütun isimlerini temizle
-        viop_data.columns = viop_data.columns.str.strip()
+    for _, row in filtered_data.iterrows():
+        equity_code = row['EQUITY CODE']
+        indices = row['INDICES']
 
-        # .E ile biten ISLEM KODU değerlerini filtrele
-        filtered_data = thb_data[thb_data['ISLEM  KODU'].str.endswith('.E', na=False)]
+        # DAYANAK VARLIK sütununda eşleşme ara
+        matches = viopms_data[viopms_data['DAYANAK VARLIK'] == equity_code]
 
-        # İlgili sütunları seç
-        selected_columns = filtered_data[['ISLEM  KODU', 'BIST 100 ENDEKS', 'BIST 30 ENDEKS']]
-
-        # Gerekli sütunları kontrol et
-        if 'DAYANAK VARLIK' not in viop_data.columns or 'SOZLESME KODU' not in viop_data.columns:
-            st.write("Gerekli sütunlar bulunamadı! Lütfen VIOPMS dosyasını kontrol edin.")
-            return
-
-        # Sadece F_ ile başlayan SOZLESME KODU değerlerini filtrele
-        viop_data = viop_data[viop_data['SOZLESME KODU'].str.startswith('F_', na=False)]
-
-        # ISLEM KODU'nu VIOPMS dosyasındaki DAYANAK VARLIK sütununda ara
-        result_data = []
-        for _, row in selected_columns.iterrows():
-            matches = viop_data[viop_data['DAYANAK VARLIK'] == row['ISLEM  KODU']]
-            for _, match in matches.iterrows():
-                result_data.append({
-                    'ISLEM  KODU': row['ISLEM  KODU'],
-                    'SOZLESME KODU': match['SOZLESME KODU'],
-                    'BIST 100 ENDEKS': row['BIST 100 ENDEKS'],
-                    'BIST 30 ENDEKS': row['BIST 30 ENDEKS']
+        # SOZLESME KODU sütunundan F_ ile başlayanları al
+        for _, match_row in matches.iterrows():
+            sozlesme_kodu = match_row['SOZLESME KODU']
+            if sozlesme_kodu.startswith('F_'):
+                expanded_data.append({
+                    'EQUITY CODE': equity_code,
+                    'INDICES': indices,
+                    'SOZLESME KODU': sozlesme_kodu
                 })
 
-        # Sonuçları DataFrame'e dönüştür ve CSV'ye kaydet
-        output_data = pd.DataFrame(result_data)
-        output_file = './EOD/BULTEN/filtered_thb.csv'
-        output_data.to_csv(output_file, index=False, encoding='utf-8')
-        st.write(f"Filtrelenmiş ve eşleştirilmiş veriler {output_file} dosyasına kaydedildi.")
+    # Yeni verileri DataFrame'e dönüştür
+    expanded_df = pd.DataFrame(expanded_data)
 
-        # CSV dosyasını sayfada görüntüle
-        st.write("**Filtered THB Verileri**")
-        st.dataframe(output_data)
-
-    # Hisse senedi ve VIOP tablolarını indirme işlemi
-    download_eqty_and_viop_tables()
-
-    # THB dosyasını işle
-    process_thb_file()
-
-    st.write("Tüm işlemler başarıyla tamamlandı!")
+    # Streamlit sayfasında görüntüle
+    st.title("Filtered Data")
+    if not expanded_df.empty:
+        st.dataframe(expanded_df)
+    else:
+        st.write("Hiçbir veri bulunamadı.")
 
 if __name__ == "__main__":
     main()

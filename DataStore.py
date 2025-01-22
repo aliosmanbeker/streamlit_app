@@ -183,3 +183,11 @@ if __name__ == "__main__":
     viop_table = datastore.download_viopms_table()
     print("Mevcut Sözleşmeler Tablosu:")
     print(viop_table)
+
+    # Endeks tablosunu indir, ekrana yazdır ve kaydet
+    indexes = datastore.get_indexes()
+    print("Endeks Tablosu:")
+    print(indexes)
+    indexes.to_csv("./EOD/BULTEN/endeks_tablosu.csv", index=False)
+    print("Endeks Tablosu 'endeks_tablosu.csv' dosyasına kaydedildi.")
+
