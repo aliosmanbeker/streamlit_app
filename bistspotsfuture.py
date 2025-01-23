@@ -20,10 +20,8 @@ def main():
 
     # Dosyanın var olup olmadığını kontrol et
     if os.path.exists(viopms_file):
-        # Dosya adındaki tarihi al
         file_date = viopms_file.split('_')[-1].split('.')[0]
 
-        # Dosya tarihi bugünün tarihiyle eşleşiyorsa indirme işlemi yapılmaz
         if file_date == today:
             print("Dosya güncel. İşlem devam ediyor...")
         else:
@@ -64,10 +62,10 @@ def main():
     priority_mapping = {"BIST 30": 1, "BIST 50": 2, "BIST 100": 3}
     filtered_indexes['PRIORITY'] = filtered_indexes['INDICES'].map(priority_mapping)
 
-    # Alfabetik sıralama ve öncelik sırasına göre sıralama
+    # Sıralama ve benzersiz hale getirme
     filtered_indexes = filtered_indexes.sort_values(by=['EQUITY CODE', 'PRIORITY']).drop_duplicates(subset=['EQUITY CODE'], keep='first')
 
-    # EQUITY CODE ve INDICES sütunlarını seç
+    # Gerekli sütunları seç
     filtered_data = filtered_indexes[['EQUITY CODE', 'INDICES', 'BIST 30', 'BIST 50', 'BIST 100']]
 
     # VIOPMS dosyasını yükle
@@ -81,10 +79,10 @@ def main():
                 print("Gerekli sütunlar bulunamadı: DAYANAK VARLIK veya SOZLESME KODU eksik.")
                 return
     else:
-        print("VIOPMS tablosu bulunamadı, işlem gerçekleştirilemiyor.", viopms_file)
+        print("VIOPMS tablosu bulunamadı, işlem gerçekleştirilemiyor.")
         return
 
-    # SOZLESME KODU'nu eklemek için genişletilmiş veri setini oluştur
+    # Benzersiz bir veri seti oluştur
     expanded_data = []
     for _, row in filtered_data.iterrows():
         equity_code = row['EQUITY CODE']
@@ -93,30 +91,30 @@ def main():
         # DAYANAK VARLIK sütununda eşleşme ara
         matches = viopms_data[viopms_data['DAYANAK VARLIK'] == equity_code]
 
-        # SOZLESME KODU sütunundan F_ ile başlayanları al
-        for _, match_row in matches.iterrows():
-            sozlesme_kodu = match_row['SOZLESME KODU']
-            if sozlesme_kodu.startswith('F_'):
-                expanded_data.append({
-                    'EQUITY CODE': equity_code,
-                    'INDICES': indices,
-                    'SOZLESME KODU': sozlesme_kodu,
-                    'BIST 30': row['BIST 30'],
-                    'BIST 50': row['BIST 50'],
-                    'BIST 100': row['BIST 100']
-                })
+        # F_ ile başlayan SOZLESME KODU değerlerini birleştir
+        sozlesme_kodlari = ", ".join(matches[matches['SOZLESME KODU'].str.startswith('F_')]['SOZLESME KODU'].unique())
+
+        expanded_data.append({
+            'UNDERLYING': equity_code,
+            'INDICES': indices,
+            'FUTURE': sozlesme_kodlari,
+            'BIST 30': row['BIST 30'],
+            'BIST 50': row['BIST 50'],
+            'BIST 100': row['BIST 100']
+        })
 
     # Yeni verileri DataFrame'e dönüştür
     expanded_df = pd.DataFrame(expanded_data)
 
-    # Streamlit arayüzü için filtre seçeneklerini ekle
+    # Filtreleme ve CSV'ye yazma
+    expanded_df.to_csv("filtered.csv", index=False)
+
+    # Streamlit arayüzü
     st.title("Filtered Data")
 
     col1, col2 = st.columns(2)
-
     with col1:
         positive_filter = st.selectbox("Pozitif Filtre", ["Hepsi", "BIST 100", "BIST 50", "BIST 30"])
-
     with col2:
         negative_filter = st.selectbox("Negatif Filtre", ["Hepsi", "BIST 100", "BIST 50", "BIST 30"])
 
@@ -137,20 +135,14 @@ def main():
         expanded_df = expanded_df[expanded_df['BIST 30'] == 0]
 
     # Filtrelenmiş veriyi CSV dosyasına kaydet
-    expanded_df.to_csv("filtered.csv", index=False)
+    expanded_df.to_csv("filtered_filtered.csv", index=False)
 
-    # Filtrelenmiş veriyi AgGrid kullanarak görüntüle (ortalanmış ve scroll eklenmiş şekilde)
+    # AgGrid ile interaktif tablo
     if not expanded_df.empty:
         gb = GridOptionsBuilder.from_dataframe(expanded_df)
         gb.configure_default_column(editable=True, groupable=True, filter=True)
-        gb.configure_grid_options(domLayout='normal')  # Scroll için ayar
         grid_options = gb.build()
-        AgGrid(
-            expanded_df,
-            gridOptions=grid_options,
-            height=500,  # Scroll için tablo yüksekliği ayarlandı
-            fit_columns_on_grid_load=True,
-        )
+        AgGrid(expanded_df, gridOptions=grid_options, height=500, fit_columns_on_grid_load=True)
     else:
         st.write("Hiçbir veri bulunamadı.")
 
