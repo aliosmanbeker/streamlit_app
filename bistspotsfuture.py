@@ -16,7 +16,7 @@ def main():
     today = datetime.today().strftime('%Y%m%d')
 
     # Kontrol edilecek dosyanın ismi
-    viopms_file = './EOD/BULTEN/viopms_20250123.csv'
+    viopms_file = f'./EOD/BULTEN/viopms_{today}.csv'
 
     # Dosyanın var olup olmadığını kontrol et
     if os.path.exists(viopms_file):
@@ -139,13 +139,18 @@ def main():
     # Filtrelenmiş veriyi CSV dosyasına kaydet
     expanded_df.to_csv("filtered.csv", index=False)
 
-    # Filtrelenmiş veriyi AgGrid kullanarak görüntüle (sayfa boyutuna göre ayarla)
+    # Filtrelenmiş veriyi AgGrid kullanarak görüntüle (ortalanmış ve scroll eklenmiş şekilde)
     if not expanded_df.empty:
         gb = GridOptionsBuilder.from_dataframe(expanded_df)
         gb.configure_default_column(editable=True, groupable=True, filter=True)
-        gb.configure_grid_options(domLayout='autoHeight')  # Sayfa boyutuna göre ayarlandı
+        gb.configure_grid_options(domLayout='normal')  # Scroll için ayar
         grid_options = gb.build()
-        AgGrid(expanded_df, gridOptions=grid_options, fit_columns_on_grid_load=True)  # Fit sütunları etkinleştir
+        AgGrid(
+            expanded_df,
+            gridOptions=grid_options,
+            height=500,  # Scroll için tablo yüksekliği ayarlandı
+            fit_columns_on_grid_load=True,
+        )
     else:
         st.write("Hiçbir veri bulunamadı.")
 
