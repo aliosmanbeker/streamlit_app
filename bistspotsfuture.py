@@ -95,9 +95,9 @@ def main():
         sozlesme_kodlari = ", ".join(matches[matches['SOZLESME KODU'].str.startswith('F_')]['SOZLESME KODU'].unique())
 
         expanded_data.append({
-            'UNDERLYING': equity_code,
+            'EQUITY CODE': equity_code,
             'INDICES': indices,
-            'FUTURE': sozlesme_kodlari,
+            'SOZLESME KODU': sozlesme_kodlari,
             'BIST 30': row['BIST 30'],
             'BIST 50': row['BIST 50'],
             'BIST 100': row['BIST 100']
@@ -112,11 +112,13 @@ def main():
     # Streamlit arayüzü
     st.title("Filtered Data")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         positive_filter = st.selectbox("Pozitif Filtre", ["Hepsi", "BIST 100", "BIST 50", "BIST 30"])
     with col2:
         negative_filter = st.selectbox("Negatif Filtre", ["Hepsi", "BIST 100", "BIST 50", "BIST 30"])
+    with col3:
+        future_filter = st.radio("Future Filtre", ["Future Olmayanları Çıkart", "Hepsini Göster"], index=0)
 
     # Pozitif filtreyi uygula
     if positive_filter == "BIST 100":
@@ -133,6 +135,10 @@ def main():
         expanded_df = expanded_df[expanded_df['BIST 50'] == 0]
     elif negative_filter == "BIST 30":
         expanded_df = expanded_df[expanded_df['BIST 30'] == 0]
+
+    # Future olmayanları çıkart filtresi
+    if future_filter == "Future Olmayanları Çıkart":
+        expanded_df = expanded_df[expanded_df['SOZLESME KODU'] != ""]
 
     # Filtrelenmiş veriyi CSV dosyasına kaydet
     expanded_df.to_csv("filtered_filtered.csv", index=False)
