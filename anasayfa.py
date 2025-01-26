@@ -22,7 +22,9 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Filtrelenmiş CallVarant Listeleri",
     "DEV-Filtrelenmiş CallVarant Listeleri",
     "Holding ve Ortakları Grafiği",
-    "Filtrelenmiş Future ve Bist Hisseleri"
+    "Filtrelenmiş Future ve Bist Hisseleri",
+    "Brüt Takas Hisseleri",
+    "Endeks Ağırlık"
 ])
 
 if selected_page == "Ana Sayfa":
@@ -76,12 +78,18 @@ elif selected_page == "Filtrelenmiş CallVarant Listeleri":
 elif selected_page == "DEV-Filtrelenmiş CallVarant Listeleri":
     import Filtrelenmiş_Varant_Listeleri_CALL_dev
     Filtrelenmiş_Varant_Listeleri_CALL_dev.show_page()
-elif selected_page == "Holding ve Ortakları Grafiği":  # Yeni sayfa kontrolü
+elif selected_page == "Holding ve Ortakları Grafiği":
     import filtered_graph
     filtered_graph.show_page()
-elif selected_page == "Filtrelenmiş Future ve Bist Hisseleri":  # Yeni sayfa kontrolü
+elif selected_page == "Filtrelenmiş Future ve Bist Hisseleri":
     import bistspotsfuture
     bistspotsfuture.main()
-# elif selected_page == "Warrants Listesi":  # Warrants Listesi sayfası
+elif selected_page == "Brüt Takas Hisseleri":
+    import brüt_takas
+    brüt_takas.show_page()
+elif selected_page == "Endeks Ağırlık":
+    import endeks_agirlik
+    endeks_agirlik.main()
+# elif selected_page == "Warrants Listesi":
 #     import warrants_list
-#     warrants_list.show_page()  # warrants_list.py içindeki show_page fonksiyonu çalıştırılır
+#     warrants_list.show_page()
