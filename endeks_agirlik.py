@@ -6,7 +6,8 @@ from DataStore import DataStore
 
 def main():
 
-    st.title("Endeks Ağırlık Tablosu")
+    st.title("Hisse Açıklık Tablosu")
+    st.text("Piyasa değeri bir önceki kapanış fiyatına göre hesaplamaktadır!")
 
     # DataStore sınıfından bir örnek oluştur
     datastore = DataStore()
@@ -44,14 +45,21 @@ def main():
             return
 
     try:
-        st.write("XU100 Endeks Ağırlık Tablosu oluşturuluyor...")
         indexes_df = pd.read_csv(indexes_file_path)
+
+        required_columns = ['EQUITY CODE', ' EQUITY NAME', 'TOTAL NUMBER OF SHARES', 'FREE FLOAT RATIO']
+        missing_columns = [col for col in required_columns if col not in indexes_df.columns]
+
+        if missing_columns:
+            st.error(f"Eksik sütunlar: {', '.join(missing_columns)}")
+            return
+
         xu100_filtered = indexes_df[indexes_df['INDEX CODE'] == 'XU100']
-        equity_codes = xu100_filtered[['EQUITY CODE', 'EQUITY NAME', 'TOTAL NUMBER OF SHARES', 'FREE FLOAT RATIO']].copy()
+        equity_codes = xu100_filtered[['EQUITY CODE', ' EQUITY NAME', 'TOTAL NUMBER OF SHARES', 'FREE FLOAT RATIO']].copy()
 
         # Halka Açık Senet sütununu hesaplayıp ekle
         equity_codes['TOTAL NUMBER OF SHARES'] = pd.to_numeric(equity_codes['TOTAL NUMBER OF SHARES'], errors='coerce')
-        equity_codes['FREE FLOAT RATIO'] = pd.to_numeric(equity_codes['FREE FLOAT RATIO'], errors='coerce')
+        equity_codes['DOLAŞIMDAKİ PAY ORANI'] = pd.to_numeric(equity_codes['FREE FLOAT RATIO'], errors='coerce')
         equity_codes['HALKA ACIK SENET'] = equity_codes['TOTAL NUMBER OF SHARES'] * equity_codes['FREE FLOAT RATIO']
 
         # Hisse senedi tablosunu oku
@@ -70,10 +78,21 @@ def main():
         # Piyasa Değeri sütununu hesaplayıp ekle
         equity_codes['PIYASA DEGERI'] = equity_codes['TOTAL NUMBER OF SHARES'] * equity_codes['KAPANIS FIYATI']
 
+        # Halka Açık Değer, Halka Açık Senet, Kapanış Fiyatı ve Piyasa Değeri sütunlarındaki değerleri yuvarla ve formatla
+        equity_codes['HALKA ACIK DEGER'] = equity_codes['HALKA ACIK DEGER'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        equity_codes['HALKA ACIK SENET'] = equity_codes['HALKA ACIK SENET'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        equity_codes['KAPANIS FIYATI'] = equity_codes['KAPANIS FIYATI'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        equity_codes['TOPLAM PAY SAYISI'] = equity_codes['TOTAL NUMBER OF SHARES'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        equity_codes['PIYASA DEGERI'] = equity_codes['PIYASA DEGERI'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+
         # Sadece gerekli sütunları kaydet
-        final_data = equity_codes[['EQUITY CODE', 'EQUITY NAME', 'HALKA ACIK SENET', 'HALKA ACIK DEGER', 'PIYASA DEGERI']]
+        final_data = equity_codes[['EQUITY CODE', ' EQUITY NAME', 'TOPLAM PAY SAYISI', 'DOLAŞIMDAKİ PAY ORANI', 'HALKA ACIK SENET', 'HALKA ACIK DEGER', 'PIYASA DEGERI']]
+        # Son kullanıcıya gösterilecek sütun isimlerini değiştir
+        final_data = final_data.rename(columns={
+            'EQUITY CODE': 'HISSE KODU',
+            ' EQUITY NAME': 'HISSE ADI'
+        })
         final_data.to_csv(endeks_agirlik_path, index=False)
-        st.write(f"XU100 Endeks Ağırlık Tablosu başarıyla oluşturuldu ve '{endeks_agirlik_path}' dosyasına kaydedildi.")
 
         # Tabloyu Streamlit'te AgGrid ile göster
         st.subheader("Endeks Ağırlık Tablosu")

@@ -39,12 +39,13 @@ def main():
 
     # Endeks Tablosu'nu yükle
     endeks_dosyasi = "./EOD/BULTEN/endeks_tablosu.csv"
-    if os.path.exists(endeks_dosyasi):
-        indexes = pd.read_csv(endeks_dosyasi)
-        print("Endeks Tablosu yüklendi.")
-    else:
-        print("Endeks tablosu bulunamadı, işlem gerçekleştirilemiyor.")
-        return
+    indexes = pd.read_csv(endeks_dosyasi)
+    # if os.path.exists(endeks_dosyasi):
+    #     indexes = pd.read_csv(endeks_dosyasi)
+    #     print("Endeks Tablosu yüklendi.")
+    # else:
+    #     print("Endeks tablosu bulunamadı, işlem gerçekleştirilemiyor.")
+    #     return
 
     # Endeks Tablosu'ndan sonu .E ile biten EQUITY CODE değerlerini filtrele
     filtered_indexes = indexes[indexes['EQUITY CODE'].str.endswith('.E', na=False)]
@@ -67,20 +68,9 @@ def main():
 
     # Gerekli sütunları seç
     filtered_data = filtered_indexes[['EQUITY CODE', 'INDICES', 'BIST 30', 'BIST 50', 'BIST 100']]
-
-    # VIOPMS dosyasını yükle
-    if os.path.exists(viopms_file):
-        with open(viopms_file, 'r', encoding='utf-8') as file:
-            header = file.readline().strip().split(',')
-            if 'DAYANAK VARLIK' in header and 'SOZLESME KODU' in header:
-                viopms_data = pd.read_csv(viopms_file, delimiter=',', skiprows=1, names=header)
-                print("VIOPMS Tablosu başarıyla yüklendi.")
-            else:
-                print("Gerekli sütunlar bulunamadı: DAYANAK VARLIK veya SOZLESME KODU eksik.")
-                return
-    else:
-        print("VIOPMS tablosu bulunamadı, işlem gerçekleştirilemiyor.")
-        return
+    with open(viopms_file, 'r', encoding='utf-8') as file:
+        header = file.readline().strip().split(',')
+        viopms_data = pd.read_csv(viopms_file, delimiter=',', skiprows=1, names=header)
 
     # Benzersiz bir veri seti oluştur
     expanded_data = []
@@ -141,7 +131,7 @@ def main():
         expanded_df = expanded_df[expanded_df['SOZLESME KODU'] != ""]
 
     # Filtrelenmiş veriyi CSV dosyasına kaydet
-    expanded_df.to_csv("filtered_filtered.csv", index=False)
+    expanded_df.to_csv("filtered_bist.csv", index=False)
 
     # AgGrid ile interaktif tablo
     if not expanded_df.empty:

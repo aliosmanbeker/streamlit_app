@@ -24,7 +24,7 @@ selected_page = st.sidebar.radio("Sayfa seçin:", [
     "Holding ve Ortakları Grafiği",
     "Filtrelenmiş Future ve Bist Hisseleri",
     "Brüt Takas Hisseleri",
-    "Endeks Ağırlık"
+    "Hisse Açıklık Tablosu"
 ])
 
 if selected_page == "Ana Sayfa":
@@ -87,7 +87,7 @@ elif selected_page == "Filtrelenmiş Future ve Bist Hisseleri":
 elif selected_page == "Brüt Takas Hisseleri":
     import brüt_takas
     brüt_takas.show_page()
-elif selected_page == "Endeks Ağırlık":
+elif selected_page == "Hisse Açıklık Tablosu":
     import endeks_agirlik
     endeks_agirlik.main()
 # elif selected_page == "Warrants Listesi":
