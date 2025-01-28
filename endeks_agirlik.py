@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np
 import pandas as pd
 import os
 from st_aggrid import AgGrid, GridOptionsBuilder
@@ -59,7 +60,7 @@ def main():
 
         # Halka Açık Senet sütununu hesaplayıp ekle
         equity_codes['TOTAL NUMBER OF SHARES'] = pd.to_numeric(equity_codes['TOTAL NUMBER OF SHARES'], errors='coerce')
-        equity_codes['DOLAŞIMDAKİ PAY ORANI'] = pd.to_numeric(equity_codes['FREE FLOAT RATIO'], errors='coerce')
+        equity_codes['FREE FLOAT RATIO'] = pd.to_numeric(equity_codes['FREE FLOAT RATIO'], errors='coerce')
         equity_codes['HALKA ACIK SENET'] = equity_codes['TOTAL NUMBER OF SHARES'] * equity_codes['FREE FLOAT RATIO']
 
         # Hisse senedi tablosunu oku
@@ -78,25 +79,31 @@ def main():
         # Piyasa Değeri sütununu hesaplayıp ekle
         equity_codes['PIYASA DEGERI'] = equity_codes['TOTAL NUMBER OF SHARES'] * equity_codes['KAPANIS FIYATI']
 
-        # Halka Açık Değer, Halka Açık Senet, Kapanış Fiyatı ve Piyasa Değeri sütunlarındaki değerleri yuvarla ve formatla
-        equity_codes['HALKA ACIK DEGER'] = equity_codes['HALKA ACIK DEGER'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
-        equity_codes['HALKA ACIK SENET'] = equity_codes['HALKA ACIK SENET'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
-        equity_codes['KAPANIS FIYATI'] = equity_codes['KAPANIS FIYATI'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
-        equity_codes['TOPLAM PAY SAYISI'] = equity_codes['TOTAL NUMBER OF SHARES'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
-        equity_codes['PIYASA DEGERI'] = equity_codes['PIYASA DEGERI'].round().apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        # Halka Açık Değer, Halka Açık Senet, Kapanış Fiyatı ve Piyasa Değeri sütunlarındaki değerleri yuvarla
+        equity_codes['TOPLAM PAY SAYISI'] = np.round(equity_codes['TOTAL NUMBER OF SHARES'])
+        equity_codes['HALKA ACIK SENET'] = np.round(equity_codes['HALKA ACIK SENET'])
+        equity_codes['HALKA ACIK DEGER'] = np.round(equity_codes['HALKA ACIK DEGER'])
+        equity_codes['PIYASA DEGERI'] = np.round(equity_codes['PIYASA DEGERI'])
 
         # Sadece gerekli sütunları kaydet
-        final_data = equity_codes[['EQUITY CODE', ' EQUITY NAME', 'TOPLAM PAY SAYISI', 'DOLAŞIMDAKİ PAY ORANI', 'HALKA ACIK SENET', 'HALKA ACIK DEGER', 'PIYASA DEGERI']]
+        final_data = equity_codes[['EQUITY CODE', ' EQUITY NAME', 'TOPLAM PAY SAYISI', 'FREE FLOAT RATIO', 'HALKA ACIK SENET', 'HALKA ACIK DEGER', 'PIYASA DEGERI']]
         # Son kullanıcıya gösterilecek sütun isimlerini değiştir
         final_data = final_data.rename(columns={
             'EQUITY CODE': 'HISSE KODU',
-            ' EQUITY NAME': 'HISSE ADI'
+            ' EQUITY NAME': 'HISSE ADI',
+            'FREE FLOAT RATIO': 'DOLAŞIMDAKİ PAY ORANI'
         })
-        final_data.to_csv(endeks_agirlik_path, index=False)
 
-        # Tabloyu Streamlit'te AgGrid ile göster
+        # Streamlit ile tabloyu AgGrid'de göster
         st.subheader("Endeks Ağırlık Tablosu")
         gb = GridOptionsBuilder.from_dataframe(final_data)
+
+        # Sayısal sütunları binlik ayracı ile göstermek için formatlama
+        numeric_columns = ['TOPLAM PAY SAYISI', 'HALKA ACIK SENET', 'HALKA ACIK DEGER', 'PIYASA DEGERI']
+        for col in numeric_columns:
+            gb.configure_column(col, type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+                                valueFormatter="x.toLocaleString('en-US')")  # Binlik ayracı formatı
+
         gb.configure_default_column(editable=True, groupable=True, filter=True)
         grid_options = gb.build()
         AgGrid(final_data, gridOptions=grid_options, height=500, fit_columns_on_grid_load=True)
